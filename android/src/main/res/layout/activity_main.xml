@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+  <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintLeft_toLeftOf="parent"
+      app:layout_constraintRight_toRightOf="parent"
+      android:orientation="vertical"
+  >
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_spotify_client_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Change Spotify Client ID"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_authorize_spotify"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Authorize Me on Spotify"/>
+
+    <TextView
+        android:id="@+id/text_view_current_spotify_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Unauthorized"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/fetch_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fetch History"
+        android:enabled="false"/>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progress_fetch_history"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:indeterminate="true"
+        android:alpha="0"
+    />
+
+    <TextView
+        android:id="@+id/text_view_history_result"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No result"
+    />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_authorize_parcel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Authorize Me on Parcel"/>
+
+    <TextView
+        android:id="@+id/text_view_current_parcel_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Unauthorized"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_start_training"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Start training"
+        android:enabled="false"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_upload_dummy_document"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload dummy document"
+        android:enabled="false"/>
+
+  </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

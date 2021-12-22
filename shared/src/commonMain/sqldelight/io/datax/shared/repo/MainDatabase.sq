@@ -1,0 +1,75 @@
+CREATE TABLE tracks
+(
+    id                         TEXT    NOT NULL PRIMARY KEY,
+    album                      TEXT,
+    in_recent_tracks           INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_saved_tracks            INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_top_tracks_short_term   INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_top_tracks_medium_term  INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_top_tracks_long_term    INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_album                   INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_own_playlists           INTEGER AS Boolean NOT NULL DEFAULT 0,
+    in_foreign_playlists       INTEGER AS Boolean NOT NULL DEFAULT 0,
+    album_in_own_playlists     INTEGER AS Boolean DEFAULT 0,
+    album_in_foreign_playlists INTEGER AS Boolean DEFAULT 0
+);
+
+CREATE TABLE trackFeatures
+(
+    id               TEXT           NOT NULL PRIMARY KEY,
+    acousticness     REAL AS Float  NOT NULL,
+    danceability     REAL AS Float  NOT NULL,
+    duration_ms      INTEGER AS Int NOT NULL,
+    energy           REAL AS Float  NOT NULL,
+    instrumentalness REAL AS Float  NOT NULL,
+    key              INTEGER AS Int NOT NULL,
+    liveness         REAL AS Float  NOT NULL,
+    loudness         REAL AS Float  NOT NULL,
+    mode             INTEGER AS Int NOT NULL,
+    speechiness      REAL AS Float  NOT NULL,
+    tempo            REAL AS Float  NOT NULL,
+    time_signature   INTEGER AS Int NOT NULL,
+    valence          REAL AS Float  NOT NULL
+);
+
+insertTrack:
+INSERT OR
+REPLACE
+INTO tracks (id, album, in_recent_tracks, in_saved_tracks, in_top_tracks_short_term, in_top_tracks_medium_term,
+             in_top_tracks_long_term, in_album, in_own_playlists, in_foreign_playlists, album_in_own_playlists,
+             album_in_foreign_playlists)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertTrackFeature:
+INSERT OR
+REPLACE
+INTO trackFeatures (id, acousticness, danceability, duration_ms, energy, instrumentalness, key, liveness, loudness,
+                    mode, speechiness, tempo, time_signature, valence)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectAllTracks:
+SELECT *
+FROM tracks;
+
+selectAllTrackFeatures:
+SELECT *
+FROM trackFeatures
+ORDER BY id;
+
+selectAllTrackFeaturesByIds:
+SELECT *
+FROM trackFeatures
+WHERE id IN ?
+ORDER BY id;
+
+countTrackFeatures:
+SELECT count(*)
+FROM trackFeatures;
+
+deleteAllTracks:
+DELETE
+FROM tracks;
+
+deleteAllTrackFeatures:
+DELETE
+FROM trackFeatures;

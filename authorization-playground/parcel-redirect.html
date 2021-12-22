@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Parcel Redirect</title>
+</head>
+
+<body>
+<a id="link">Loading...</a>
+<div id="error"></div>
+<script>
+  const a = document.getElementById("link");
+
+  const urlSearchParams = new URLSearchParams(window.location.search);
+  const params = Object.fromEntries(urlSearchParams.entries());
+
+  const code = params.code
+  if (code) {
+    a.innerText = "Click here to continue"
+    a.href = `spotifyrecommendationlab://parcelauth#${code}`;
+    document.getElementById("error").innerText = JSON.stringify(params);
+  } else {
+    document.getElementById("error").innerText = JSON.stringify(params);
+  }
+
+</script>
+</body>
+</html>
