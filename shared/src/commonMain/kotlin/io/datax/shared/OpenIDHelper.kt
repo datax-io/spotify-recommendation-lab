@@ -1,9 +1,9 @@
 package io.datax.shared
 
-expect object OpenIDHelper {
+interface OpenIDHelperDelegate<R> {
 
     fun getUri(clientId: String, redirectUri: String, scopes: List<String>): String
 
-    fun getTokenRequest(clientId: String, authCode: String): Any
+    fun getTokenRequest(clientId: String, authCode: String): R
 
 }

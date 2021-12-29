@@ -2,20 +2,19 @@ package io.datax.shared
 
 import io.ktor.client.request.*
 import io.ktor.http.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 const val redirectUri = "https://storage.googleapis.com/datax-research-public/parcel-redirect/index.html"
 
-class ParcelHelper<D>(
+class ParcelHelper<R, D>(
     private val preferences: Preferences? = null,
+    private val openIDHelperDelegate: OpenIDHelperDelegate<R>,
     private val formDataUploadDelegate: FormDataUploadDelegate<D>,
-    appId: String,
-    clientId: String,
+    appId: String?,
+    clientId: String?,
     token: String? = null,
-) {
+) : Changeable() {
 
     companion object {
 
@@ -25,35 +24,46 @@ class ParcelHelper<D>(
 
     }
 
-    var appId = appId
+    var appId: String? = appId
         set(value) {
             field = value
             this.token = null
+            this.user = null
+            preferences?.saveParcelAppId(value)
+            notifyChanged()
         }
 
-    var clientId = clientId
+    var clientId: String? = clientId
         set(value) {
             field = value
             this.token = null
+            this.user = null
+            preferences?.saveParcelClientId(value)
+            notifyChanged()
         }
-
-    private var userId: String? = null
 
     var token: String? = token
         set(value) {
             field = value
+            if (value == null) {
+                user = null
+            }
             preferences?.saveParcelToken(value)
         }
 
-    private val userChannel = MutableStateFlow<ParcelUser?>(null)
-    val userFlow get() = userChannel.asStateFlow()
+    var user: ParcelUser? = null
+        private set(value) {
+            field = value
+            notifyChanged()
+        }
 
+    val ready get() = user != null && token != null
 
     /**
      * See https://docs.oasislabs.com/parcel/latest/selected-topics/login-with-oasis.html#oasis-auth-for-static-single-page-applications
      */
-    fun getAuthUrl(): String = OpenIDHelper.getUri(
-        clientId = clientId,
+    fun getAuthUrl(): String = openIDHelperDelegate.getUri(
+        clientId = clientId ?: throw  Exception("No client ID set"),
         redirectUri = redirectUri,
         scopes = listOf("openid", "profile", "email", "parcel.public", "parcel.safe", "parcel.full")
     )
@@ -71,8 +81,8 @@ class ParcelHelper<D>(
     suspend fun refreshCurrentUser(): ParcelUser? = runCatching {
         httpClient.get<ParcelUser>("$baseUrl/identities/me") { headers(getHeader) }
     }.onFailure { it.printStackTrace() }.getOrNull()
-        ?.also { userId = it.id }
-        .also { userChannel.tryEmit(it) }
+        ?.also { user = it }
+        .also { notifyChanged() }
 
     /**
      * https://docs.oasislabs.com/parcel/latest/parcel-api.html#operation/uploadDocument
@@ -81,7 +91,7 @@ class ParcelHelper<D>(
         val metadata = jsonObjectOf(
             "details" to mapOf(
                 "title" to fileName,
-                "tags" to listOf("to-app-$appId"),
+                "tags" to listOf("to-app-${appId ?: throw Exception("No")}"),
             )
         )
         return DocumentUploadData(
@@ -94,4 +104,8 @@ class ParcelHelper<D>(
             }
         }.onFailure { it.printStackTrace() }.getOrThrow()
     }
+
+    fun getTokenRequest(clientId: String, authCode: String) =
+        this.openIDHelperDelegate.getTokenRequest(clientId, authCode)
+
 }

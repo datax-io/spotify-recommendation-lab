@@ -41,7 +41,10 @@ class TrainingViewController: UIViewController {
     }
 
     func startTrainingMNIST() {
-        let host = pygridHost
+        guard let host = pygridHost else {
+            print("PyGrid host is not set")
+            return
+        }
         guard let syftClient = SyftClient(url: URL(string: host)!, authToken: pygridAuthToken) else {
             appendText("No syft client")
             return
@@ -167,7 +170,10 @@ class TrainingViewController: UIViewController {
             return
         }
         
-        let host = pygridHost
+        guard let host = pygridHost else {
+            print("PyGrid host is not set")
+            return
+        }
         guard let syftClient = SyftClient(url: URL(string: host)!, authToken: pygridAuthToken) else {
             appendText("No syft client")
             return

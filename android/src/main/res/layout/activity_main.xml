@@ -1,89 +1,268 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_view"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".MainActivity">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/main_view"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:padding="16dp"
+  tools:context=".MainActivity">
 
   <androidx.appcompat.widget.LinearLayoutCompat
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintLeft_toLeftOf="parent"
-      app:layout_constraintRight_toRightOf="parent"
-      android:orientation="vertical"
-  >
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_change_spotify_client_id"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Change Spotify Client ID"/>
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_authorize_spotify"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Authorize Me on Spotify"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    android:orientation="vertical"
+    app:layout_constraintVertical_bias="1.0">
 
     <TextView
+      android:text="Spotify"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_spotify_client"
+        android:text="Client ID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle" />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_spotify_client_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
         android:id="@+id/text_view_current_spotify_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Unauthorized"/>
+        android:layout_weight="1"
+        android:text="Unauthorized" />
 
-    <androidx.appcompat.widget.AppCompatButton
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_authorize_spotify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Authorize" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+          android:id="@+id/text_view_history_result"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="No result" />
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+          android:id="@+id/progress_fetch_history"
+          android:layout_width="match_parent"
+          android:layout_height="4dp"
+          android:indeterminate="true"
+          android:alpha="0" />
+      </androidx.appcompat.widget.LinearLayoutCompat>
+
+      <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/fetch_history"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Fetch History"
-        android:enabled="false"/>
+        android:minWidth="100dp"
+        android:text="Fetch"
+        android:enabled="false" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progress_fetch_history"
-        android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:indeterminate="true"
-        android:alpha="0"
-    />
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="16dp" />
 
     <TextView
-        android:id="@+id/text_view_history_result"
+      android:text="Parcel"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_parcel_app"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="No result"
-    />
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle"
+        android:text="No app ID" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_authorize_parcel"
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_parcel_app_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_parcel_client"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Authorize Me on Parcel"/>
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle"
+        android:text="No client ID" />
 
-    <TextView
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_parcel_client_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
         android:id="@+id/text_view_current_parcel_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Unauthorized"/>
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle"
+        android:text="Unauthorized" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_start_training"
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_authorize_parcel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Authorize" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <View
+      android:layout_width="match_parent"
+      android:layout_height="16dp" />
+
+    <TextView
+      android:text="PyGrid"
+      android:textStyle="bold"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_pygrid_host"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start training"
-        android:enabled="false"/>
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle"
+        android:text="Host not set" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/button_upload_dummy_document"
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_pygrid_host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_pygrid_token"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Upload dummy document"
-        android:enabled="false"/>
+        android:layout_weight="1"
+        android:maxLines="1"
+        android:ellipsize="middle"
+        android:text="Auth token not set" />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_pygrid_token"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center_vertical">
+
+      <TextView
+        android:id="@+id/text_view_current_participant_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Participant ID" />
+
+      <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/button_change_participant_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="100dp"
+        android:text="Change" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/button_start_training"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Start training"
+      android:enabled="false" />
+
+    <androidx.appcompat.widget.AppCompatButton
+      android:id="@+id/button_upload_dummy_document"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Upload dummy document"
+      android:enabled="false" />
 
   </androidx.appcompat.widget.LinearLayoutCompat>
 

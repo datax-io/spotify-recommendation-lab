@@ -11,7 +11,7 @@ interface FormDataUploadDelegate<D> {
         url: String,
         token: String,
         data: D,
-        metadata:String,
+        metadata: String,
     ): String
 
 }

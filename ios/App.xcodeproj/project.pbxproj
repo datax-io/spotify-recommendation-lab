@@ -13,7 +13,6 @@
 		7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7555FF89242A565B00829871 /* LaunchScreen.storyboard */; };
 		DE0B906B274C3BD50089BD27 /* FlowCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE0B906A274C3BD50089BD27 /* FlowCollector.swift */; };
 		DE3AC2242732586100D23C19 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DE3AC20F2732557A00D23C19 /* Main.storyboard */; };
-		DE8CC8412739008400771CCB /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE8CC8402739008400771CCB /* SettingsTableViewController.swift */; };
 		DE9695242739041700DA5B37 /* WorkflowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9695232739041700DA5B37 /* WorkflowManager.swift */; };
 		DEB6C0622772D1DB001B8736 /* MovieLensLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB6C0612772D1DB001B8736 /* MovieLensLoader.swift */; };
 		DECC557D274B5727008902AD /* TrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC557C274B5727008902AD /* TrainingViewController.swift */; };
@@ -23,6 +22,7 @@
 		DECC5587274B5E21008902AD /* train-labels-idx1-ubyte in Resources */ = {isa = PBXBuildFile; fileRef = DECC5582274B5E21008902AD /* train-labels-idx1-ubyte */; };
 		DECC5588274B5E21008902AD /* MNISTLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC5583274B5E21008902AD /* MNISTLoader.swift */; };
 		DEE29336273266ED008C70A9 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE29335273266ED008C70A9 /* AuthViewController.swift */; };
+		DEF9F6C62774E16C00AF11B7 /* OpenIdDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF9F6C52774E16C00AF11B7 /* OpenIdDelegate.swift */; };
 		E39C440219931E339617A342 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03D8E134BB57F52D76A6DE9A /* Pods_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -51,7 +51,6 @@
 		C0206EC5184AFB3167932DFD /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		DE0B906A274C3BD50089BD27 /* FlowCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowCollector.swift; sourceTree = "<group>"; };
 		DE3AC2102732557A00D23C19 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		DE8CC8402739008400771CCB /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		DE9695232739041700DA5B37 /* WorkflowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowManager.swift; sourceTree = "<group>"; };
 		DEB6C0612772D1DB001B8736 /* MovieLensLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieLensLoader.swift; sourceTree = "<group>"; };
 		DECC557C274B5727008902AD /* TrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingViewController.swift; sourceTree = "<group>"; };
@@ -61,6 +60,7 @@
 		DECC5582274B5E21008902AD /* train-labels-idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = text; path = "train-labels-idx1-ubyte"; sourceTree = "<group>"; };
 		DECC5583274B5E21008902AD /* MNISTLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNISTLoader.swift; sourceTree = "<group>"; };
 		DEE29335273266ED008C70A9 /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
+		DEF9F6C52774E16C00AF11B7 /* OpenIdDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenIdDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -104,11 +104,11 @@
 				7555FF84242A565B00829871 /* Assets.xcassets */,
 				DE3AC20F2732557A00D23C19 /* Main.storyboard */,
 				DECC557C274B5727008902AD /* TrainingViewController.swift */,
-				DE8CC8402739008400771CCB /* SettingsTableViewController.swift */,
 				7555FF89242A565B00829871 /* LaunchScreen.storyboard */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				DE9695232739041700DA5B37 /* WorkflowManager.swift */,
 				DE0B906A274C3BD50089BD27 /* FlowCollector.swift */,
+				DEF9F6C52774E16C00AF11B7 /* OpenIdDelegate.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -264,9 +264,9 @@
 			files = (
 				DECC557D274B5727008902AD /* TrainingViewController.swift in Sources */,
 				DECC5588274B5E21008902AD /* MNISTLoader.swift in Sources */,
-				DE8CC8412739008400771CCB /* SettingsTableViewController.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				DE9695242739041700DA5B37 /* WorkflowManager.swift in Sources */,
+				DEF9F6C62774E16C00AF11B7 /* OpenIdDelegate.swift in Sources */,
 				DE0B906B274C3BD50089BD27 /* FlowCollector.swift in Sources */,
 				7555FF81242A565900829871 /* SceneDelegate.swift in Sources */,
 				DEE29336273266ED008C70A9 /* AuthViewController.swift in Sources */,
