@@ -12,12 +12,12 @@ var serviceConfig = AuthorizationServiceConfiguration(
     Uri.parse("https://auth.oasislabs.com/oauth/token"),
 )
 
-actual object OpenIDHelper {
+object OpenIDHelper : OpenIDHelperDelegate<TokenRequest> {
 
     private var nonce: String? = null
     private var codeVerifier: String? = null
 
-    actual fun getUri(clientId: String, redirectUri: String, scopes: List<String>): String =
+    override fun getUri(clientId: String, redirectUri: String, scopes: List<String>): String =
         AuthorizationRequest.Builder(
             serviceConfig,
             clientId,
@@ -35,14 +35,13 @@ actual object OpenIDHelper {
             .toUri()
             .toString()
 
-    actual fun getTokenRequest(clientId: String, authCode: String): Any = TokenRequest.Builder(serviceConfig, clientId)
-        .setAuthorizationCode(authCode)
-        .setAdditionalParameters(mapOf(
-            "audience" to "https://api.oasislabs.com/parcel"
-        ))
-        .setRedirectUri(Uri.parse("https://storage.googleapis.com/datax-research-public/parcel-redirect/index.html"))
-        .setNonce(nonce)
-        .setCodeVerifier(codeVerifier)
-        .build()
+    override fun getTokenRequest(clientId: String, authCode: String): TokenRequest =
+        TokenRequest.Builder(serviceConfig, clientId)
+            .setAuthorizationCode(authCode)
+            .setAdditionalParameters(mapOf("audience" to "https://api.oasislabs.com/parcel"))
+            .setRedirectUri(Uri.parse("https://storage.googleapis.com/datax-research-public/parcel-redirect/index.html"))
+            .setNonce(nonce)
+            .setCodeVerifier(codeVerifier)
+            .build()
 
 }

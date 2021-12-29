@@ -3,21 +3,19 @@ package io.datax.shared
 import io.datax.shared.repo.DatabaseDriverFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
-class WorkflowManager<D>(
+class WorkflowManager<R, D>(
     preferences: Preferences? = null,
     databaseDriverFactory: DatabaseDriverFactory,
+    openIDHelperDelegate: OpenIDHelperDelegate<R>,
     formDataUploadDelegate: FormDataUploadDelegate<D>,
-    spotifyClientId: String? = null,
-    parcelAppId: String? = null,
-    parcelClientId: String? = null,
-    pygridHost: String? = null,
-    pygridAuthToken: String? = null,
 ) {
 
     companion object {
@@ -27,47 +25,41 @@ class WorkflowManager<D>(
 
     val spotifyHelper = SpotifyHelper(
         preferences = preferences,
-        clientId = spotifyClientId ?: preferences?.getSpotifyClient()!!,
+        clientId = preferences?.getSpotifyClient(),
         token = preferences?.getSpotifyToken(),
     )
 
     val parcelHelper = ParcelHelper(
         preferences = preferences,
+        openIDHelperDelegate = openIDHelperDelegate,
         formDataUploadDelegate = formDataUploadDelegate,
-        appId = parcelAppId ?: preferences?.getParcelAppId()!!,
-        clientId = parcelClientId ?: preferences?.getParcelClientId()!!,
+        appId = preferences?.getParcelAppId(),
+        clientId = preferences?.getParcelClientId(),
         token = preferences?.getParcelToken(),
     )
 
     val pygridHelper = PygridHelper(
         preferences = preferences,
-        host = pygridHost ?: preferences?.getPygridHost()!!,
-        authToken = pygridAuthToken ?: preferences?.getPygridToken()!!,
+        host = preferences?.getPygridHost(),
+        authToken = preferences?.getPygridToken(),
     )
 
-    val spotifyHistoryFetcher: SpotifyHistoryFetcher = SpotifyHistoryFetcher(databaseDriverFactory)
+    val spotifyHistoryFetcher: SpotifyHistoryFetcher = SpotifyHistoryFetcher(
+        databaseDriverFactory = databaseDriverFactory,
+        preferences = preferences,
+        participantId = preferences?.getParticipantId() ?: 1,
+    )
 
-    val trainingReadinessFlow: Flow<Boolean>
-        get() = combine(
-            parcelHelper.userFlow.map { it?.id != null },
-            spotifyHistoryFetcher.statusFlow.map { it != null && it.trackCount > 0 },
-        ) { readiness -> readiness.all { it } }
+    private var changesJob: Job = Job()
+
+    private val changesChannel = BroadcastChannel<Unit>(Channel.Factory.CONFLATED)
+    val changesFlow get() = changesChannel.asFlow()
 
     var callback: WorkflowManagerCallback? = null
         set(value) {
             field = value
             CoroutineScope(Dispatchers.Main).launch {
-                combine(
-                    spotifyHelper.userFlow,
-                    spotifyHistoryFetcher.statusFlow,
-                    parcelHelper.userFlow,
-                    trainingReadinessFlow,
-                ) { parts -> parts }.collect { parts ->
-                    value?.onSpotifyUserChanged(parts[0] as SpotifyUser?)
-                    value?.onSpotifyHistoryStatusChanged(parts[1] as SpotifyHistoryStatus?)
-                    value?.onParcelUserChanged(parts[2] as ParcelUser?)
-                    value?.onTrainingReadinessChanged(parts[3] as Boolean)
-                }
+                changesFlow.collect { value?.onParamsChanged() }
             }
         }
 
@@ -76,8 +68,20 @@ class WorkflowManager<D>(
             spotifyHelper.refreshCurrentUser()
             loadCachedTrackFeatures()
             parcelHelper.refreshCurrentUser()
+
+            changesJob = launch {
+                listOf(
+                    spotifyHelper,
+                    spotifyHistoryFetcher,
+                    parcelHelper,
+                    pygridHelper,
+                ).map(Changeable::changeFlow).merge()
+                    .collect { changesChannel.offer(Unit) }
+            }
         }
     }
+
+    val ready get() = parcelHelper.ready && pygridHelper.ready && spotifyHistoryFetcher.getStatus().trackCount > 0
 
     /**
      * Spotify history

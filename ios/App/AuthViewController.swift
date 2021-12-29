@@ -14,18 +14,30 @@ import Alamofire
 
 class AuthViewController: UIViewController, WorkflowManagerCallback {
     
+    @IBOutlet weak var changeSpotifyClientIdButton: UIButton!
+    @IBOutlet weak var currentSpotifyClientLabel: UILabel!
     @IBOutlet weak var getSpotifyAuthorizationButton: UIButton!
     @IBOutlet weak var currentSpotifyUserLabel: UILabel!
     
     @IBOutlet weak var fetchHistoryButton: UIButton!
     @IBOutlet weak var historyResultLabel: UILabel!
     @IBOutlet weak var fetchHistoryActivityIndicator: UIActivityIndicatorView!
-
-    @IBOutlet weak var getParcelAuthorizationButton: UIButton!
+    
+    @IBOutlet weak var currentParcelAppLabel: UILabel!
+    @IBOutlet weak var changeParcelAppIdButton: UIButton!
+    @IBOutlet weak var currentParcelClientLabel: UILabel!
+    @IBOutlet weak var changeParcelClientIdButton: UIButton!
     @IBOutlet weak var currentParcelUserLabel: UILabel!
+    @IBOutlet weak var getParcelAuthorizationButton: UIButton!
 
+    @IBOutlet weak var currentPygridHostLabel: UILabel!
+    @IBOutlet weak var changePygridHostButton: UIButton!
+    @IBOutlet weak var currentPygridTokenLabel: UILabel!
+    @IBOutlet weak var changePygridTokenButton: UIButton!
+    @IBOutlet weak var currentParticipantLabel: UILabel!
+    
+    @IBOutlet weak var changeParticipantIdButton: UIButton!
     @IBOutlet weak var startTrainingButton: UIButton!
-    @IBOutlet weak var startTrainingStatusLabel: UILabel!
     
     @IBOutlet weak var uploadDummyDocumentButton: UIButton!
     
@@ -35,9 +47,6 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     override func viewDidLoad() {
         super.viewDidLoad()
         workflowManager.callback = self
-
-        self.startTrainingStatusLabel.text = "PyGrid: \(workflowManager.pygridHelper.host)"
-
     }
     
     @IBAction
@@ -54,7 +63,8 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
 
     func handleParcelAuthorization(_ fragment: String) {
-        guard let request = OpenIDHelper.shared.getTokenRequest(clientId: workflowManager.parcelHelper.clientId, authCode: fragment) as? OIDTokenRequest else {
+        let clientId = workflowManager.parcelHelper.clientId ?? ""
+        guard let request = workflowManager.parcelHelper.getTokenRequest(clientId: clientId, authCode: fragment) else {
             return
         }
         OIDAuthorizationService.perform(request) { response, error in
@@ -67,7 +77,29 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
         }
 
     }
-
+    
+    func onParamsChanged() {
+        self.currentParticipantLabel.text = "Participant ID: \(String(workflowManager.spotifyHistoryFetcher.participantId))"
+        
+        onSpotifyClientChanged(clientId: workflowManager.spotifyHelper.clientId)
+        onSpotifyUserChanged(user: workflowManager.spotifyHelper.user)
+        onParcelParamsChanged(clientId: workflowManager.parcelHelper.clientId, appId: workflowManager.parcelHelper.appId)
+        onParcelUserChanged(user: workflowManager.parcelHelper.user)
+        onPygridParamsChanged(host: workflowManager.pygridHelper.host, authToken: workflowManager.pygridHelper.authToken)
+        onSpotifyHistoryStatusChanged(status: workflowManager.spotifyHistoryFetcher.getStatus())
+        onTrainingReadinessChanged(ready: workflowManager.ready)
+    }
+    
+    func onSpotifyClientChanged(clientId: String?) {
+        guard let clientId = clientId else {
+            self.currentSpotifyClientLabel.text = "Client ID not set"
+            self.getSpotifyAuthorizationButton.isEnabled = false
+            return
+        }
+        self.currentSpotifyClientLabel.text = "Client ID: \(clientId)"
+        self.getSpotifyAuthorizationButton.isEnabled = true
+    }
+    
     func onSpotifyUserChanged(user: SpotifyUser?) {
         guard let user = user else {
             self.currentSpotifyUserLabel.text = "Unauthorized"
@@ -76,6 +108,17 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
         }
         self.currentSpotifyUserLabel.text = "User: \(user.displayName ?? user.id)"
         self.fetchHistoryButton.isEnabled = true
+    }
+    
+    func onParcelParamsChanged(clientId: String?, appId: String?) {
+        self.currentParcelClientLabel.text = clientId.map {"Client ID: \($0)"} ?? "Client ID not set"
+        self.currentParcelAppLabel.text = appId.map {"App ID: \($0)"} ?? "App ID not set"
+        guard let _ = clientId,
+              let _ = appId else {
+            self.getParcelAuthorizationButton.isEnabled = false
+            return
+        }
+        self.getParcelAuthorizationButton.isEnabled = true
     }
 
     func onParcelUserChanged(user: ParcelUser?) {
@@ -88,7 +131,7 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
 
     @IBAction func fetchHistory(_ sender: Any) {
         self.fetchHistoryButton.isEnabled = false
-        self.historyResultLabel.text = "Fetching preference data..."
+        self.historyResultLabel.text = "Fetching data..."
         self.fetchHistoryActivityIndicator.startAnimating()
         workflowManager.fetchHistory() { result, _ in
             print(result)
@@ -109,6 +152,11 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
         self.uploadDummyDocumentButton.isEnabled = ready
     }
 
+    func onPygridParamsChanged(host: String?, authToken: String?) {
+        self.currentPygridHostLabel.text = host.map {"Host: \($0)"} ?? "Host not set"
+        self.currentPygridTokenLabel.text = authToken != nil ? "Auth token set" : "Auth token not set"
+    }
+
     @IBAction func uploadDocument(_ sender: Any) {
         guard let data = "Test content".data(using: .utf8) else {
             return
@@ -126,6 +174,63 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
         default:
             print("Unknown destination type")
         }
+    }
+    
+    
+    @IBAction func attemptChangeSpotifyClientId() {
+        promptForInput(title: "Spotify Client ID", message: "Enter new Spotify client ID",
+                       value: workflowManager.spotifyHelper.clientId ?? "") {
+            workflowManager.spotifyHelper.clientId = $0
+        }
+    }
+    
+    @IBAction func attemptChangeParcelAppId() {
+        promptForInput(title: "Parcel App ID", message: "Enter new Parcel app ID",
+                       value: workflowManager.parcelHelper.appId ?? "") {
+            workflowManager.parcelHelper.appId = $0
+        }
+    }
+    
+    @IBAction func attemptChangeParcelClientId() {
+        promptForInput(title: "Parcel Client ID", message: "Enter new Parcel client ID",
+                       value: workflowManager.parcelHelper.clientId ?? "") {
+            workflowManager.parcelHelper.clientId = $0
+        }
+    }
+    
+    @IBAction func attemptChangePygridHost(_ sender: Any) {
+        promptForInput(title: "PyGrid Host", message: "Enter new PyGrid host",
+                       value: workflowManager.pygridHelper.host ?? "") {
+            workflowManager.pygridHelper.host = $0
+        }
+    }
+    
+    @IBAction func attemptChangePygridToken(_ sender: Any) {
+        promptForInput(title: "Spotify PyGrid token", message: "Enter new PyGrid token",
+                       value: workflowManager.pygridHelper.authToken ?? "") {
+            workflowManager.pygridHelper.authToken = $0
+        }
+    }
+    
+    @IBAction func attemptChangeParticipantId() {
+        promptForInput(title: "Participant ID", message: "Enter new Participant ID",
+                       value: String(workflowManager.spotifyHistoryFetcher.participantId)) {
+            workflowManager.spotifyHistoryFetcher.participantId = Int32($0)!
+        }
+    }
+    
+    func promptForInput(title: String, message: String, value: String, valueHandler: @escaping ((String) -> Void)) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addTextField { $0.text = value }
+
+        alert.addAction(UIAlertAction(title: "Save", style: .default, handler: { [weak alert] (_) in
+            guard let textField = alert?.textFields?[0], let userText = textField.text else { return }
+            valueHandler(userText)
+        }))
+
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+
+        self.present(alert, animated: true, completion: nil)
     }
     
 }

@@ -9,6 +9,7 @@ object PreferenceKey {
     const val parcelAppId = "parcel_app_id"
     const val parcelClientId = "parcel_client_id"
 
+    const val participantId = "participant_id"
     const val pygridHost = "pygrid_host"
     const val pygridToken = "pygrid_token"
 
@@ -42,6 +43,12 @@ fun Preferences.getParcelClientId(): String? = getString(PreferenceKey.parcelCli
 fun Preferences.saveParcelClientId(clientId: String?) = when (clientId) {
     null -> removeString(PreferenceKey.parcelClientId)
     else -> setString(PreferenceKey.parcelClientId, clientId)
+}
+
+fun Preferences.getParticipantId(): Int = getString(PreferenceKey.participantId)?.toInt() ?: 1
+fun Preferences.saveParticipantId(participant: Int) = when (participant) {
+    0 -> removeString(PreferenceKey.participantId)
+    else -> setString(PreferenceKey.participantId, participant.toString())
 }
 
 fun Preferences.getPygridHost(): String? = getString(PreferenceKey.pygridHost)

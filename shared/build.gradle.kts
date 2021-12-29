@@ -39,8 +39,6 @@ kotlin {
         summary = "Shared module for Spotify Recommendation Lab"
         homepage = "datax.io"
 
-        pod("AppAuth") { version = "~> 1.4.0" }
-
         podfile = project.file("../ios/Podfile")
 
         // Maps custom Xcode configuration to NativeBuildType

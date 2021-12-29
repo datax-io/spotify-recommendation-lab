@@ -8,6 +8,7 @@
 
 import Foundation
 import Alamofire
+import AppAuth
 
 import shared
 
@@ -38,13 +39,9 @@ class SwiftFormDataUploadDelegate : FormDataUploadDelegate {
 
 let formDataUploader = SwiftFormDataUploadDelegate()
 
-let workflowManager = WorkflowManager<NSData>(
+let workflowManager = WorkflowManager<OIDTokenRequest, NSData>(
     preferences: NSObject(),
     databaseDriverFactory: DatabaseDriverFactory(),
-    formDataUploadDelegate: formDataUploader,
-    spotifyClientId: "<TODO>",
-    parcelAppId: "<TODO>",
-    parcelClientId: "<TODO>",
-    pygridHost: "<TODO>",
-    pygridAuthToken: "<TODO>"
+    openIDHelperDelegate: openIDHelper,
+    formDataUploadDelegate: formDataUploader
 )

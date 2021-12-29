@@ -28,7 +28,11 @@ suspend fun <T> withRetry(block: suspend () -> T): T = flow { emit(block()) }
 suspend fun Flow<Track>.toIdSet(): Set<String> = this.map { it.id }.toSet()
 fun Sequence<Track>.toIdSet(): Set<String> = this.map { it.id }.toSet()
 
-class SpotifyHistoryFetcher(databaseDriverFactory: DatabaseDriverFactory) {
+class SpotifyHistoryFetcher(
+    databaseDriverFactory: DatabaseDriverFactory,
+    private val preferences: Preferences? = null,
+    participantId: Int,
+) : Changeable() {
 
     companion object {
 
@@ -51,8 +55,12 @@ class SpotifyHistoryFetcher(databaseDriverFactory: DatabaseDriverFactory) {
         }
     }
 
-    private val statusChannel = MutableStateFlow<SpotifyHistoryStatus?>(null)
-    val statusFlow get() = statusChannel.asStateFlow()
+    var participantId = participantId
+        set(value) {
+            field = value
+            preferences?.saveParticipantId(value)
+            notifyChanged()
+        }
 
     private lateinit var getHeader: (HeadersBuilder.() -> Unit)
 
@@ -163,7 +171,7 @@ class SpotifyHistoryFetcher(databaseDriverFactory: DatabaseDriverFactory) {
             }
 
         val status = getStatus()
-        statusChannel.tryEmit(status)
+        notifyChanged()
         return status
     }
 
@@ -262,7 +270,7 @@ class SpotifyHistoryFetcher(databaseDriverFactory: DatabaseDriverFactory) {
     }
 
     fun loadCachedTrackFeatures() {
-        statusChannel.tryEmit(getStatus())
+        notifyChanged()
     }
 
     fun trainingData(): List<TrackTrainingData> {

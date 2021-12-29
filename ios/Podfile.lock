@@ -11,19 +11,19 @@ PODS:
   - LibTorch/Core (1.10.0):
     - LibTorch/Torch
   - LibTorch/Torch (1.10.0)
-  - OpenMinedSwiftSyft (0.5.0-rc.1):
+  - OpenMinedSwiftSyft (0.5):
     - GoogleWebRTC (~> 1.1.0)
     - LibTorch (~> 1.7)
     - SyftProto (= 0.4.9)
-  - shared (1.0-SNAPSHOT):
-    - AppAuth (~> 1.4.0)
+  - shared (1.0-SNAPSHOT)
   - SwiftProtobuf (1.8.0)
   - SyftProto (0.4.9):
     - SwiftProtobuf (~> 1.8.0)
 
 DEPENDENCIES:
   - Alamofire (~> 5.4)
-  - OpenMinedSwiftSyft (from `../../SwiftSyft-master`)
+  - AppAuth (~> 1.4.0)
+  - OpenMinedSwiftSyft (~> 0.5.0-rc.1)
   - shared (from `../shared`)
 
 SPEC REPOS:
@@ -32,12 +32,11 @@ SPEC REPOS:
     - AppAuth
     - GoogleWebRTC
     - LibTorch
+    - OpenMinedSwiftSyft
     - SwiftProtobuf
     - SyftProto
 
 EXTERNAL SOURCES:
-  OpenMinedSwiftSyft:
-    :path: "../../SwiftSyft-master"
   shared:
     :path: "../shared"
 
@@ -46,11 +45,11 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   GoogleWebRTC: b39a78c4f5cc6b0323415b9233db03a2faa7b0f0
   LibTorch: 0eeffb238d9c1bafab350353d19dc3c8d5c7442f
-  OpenMinedSwiftSyft: 27bc948103f748a29541b0be2c64a47290de2541
-  shared: 46c22939a948738d3d72e3a6c1fcebcc5905652e
+  OpenMinedSwiftSyft: a71bee65c29b2388f19e6ee0c78839448418c9e0
+  shared: 693fce7e5ff7c0b0d38e22ffed9745f635b65c84
   SwiftProtobuf: 2cbd9409689b7df170d82a92a33443c8e3e14a70
   SyftProto: da02767fd695d222748d6bdf78ff7ddbe7b1982f
 
-PODFILE CHECKSUM: cf876cc5a3170dee54a2b97b65384372491a8729
+PODFILE CHECKSUM: b9472f4e66088b7efd1b15e69e12c2a0ee884875
 
 COCOAPODS: 1.11.2
