@@ -34,15 +34,15 @@ class WorkflowManager<R, D>(
         preferences = preferences,
         openIDHelperDelegate = openIDHelperDelegate,
         formDataUploadDelegate = formDataUploadDelegate,
-        appId = preferences?.getParcelAppId(),
-        clientId = preferences?.getParcelClientId(),
+        appId = preferences?.getParcelAppId() ?: ParcelHelper.defaultAppId,
+        clientId = preferences?.getParcelClientId() ?: ParcelHelper.defaultClientId,
         token = preferences?.getParcelToken(),
     )
 
     val pygridHelper = PygridHelper(
         preferences = preferences,
-        host = preferences?.getPygridHost(),
-        authToken = preferences?.getPygridToken(),
+        host = preferences?.getPygridHost() ?: PygridHelper.defaultHost,
+        authToken = preferences?.getPygridToken() ?: PygridHelper.defaultAuthToken,
         participantId = preferences?.getParticipantId() ?: 1,
     )
 
@@ -70,7 +70,7 @@ class WorkflowManager<R, D>(
         CoroutineScope(Dispatchers.Main).launch {
             spotifyHelper.refreshCurrentUser()
             loadCachedTrackFeatures()
-            parcelHelper.refreshCurrentUser()
+            parcelHelper.token?.also { parcelHelper.refreshCurrentUser() }
 
             changesJob = launch {
                 listOf(
@@ -98,10 +98,12 @@ class WorkflowManager<R, D>(
         ?.getOrNull()
 
     suspend fun loadExternalData(): SpotifyHistoryStatus? = spotifyHistoryFetcher.externalDataPrefix
-        ?.let { kotlin.runCatching {
-            println("Kotlin run catching in WorkflowManager.loadExternalData() with externalDataPrefix = ${spotifyHistoryFetcher.externalDataPrefix} and with ${pygridHelper.numOfParticipants} participants")
-            spotifyHistoryFetcher.loadExternalData(pygridHelper.numOfParticipants)
-        } }
+        ?.let {
+            kotlin.runCatching {
+                println("Kotlin run catching in WorkflowManager.loadExternalData() with externalDataPrefix = ${spotifyHistoryFetcher.externalDataPrefix} and with ${pygridHelper.numOfParticipants} participants")
+                spotifyHistoryFetcher.loadExternalData(pygridHelper.numOfParticipants)
+            }
+        }
         ?.onFailure { it.printStackTrace() }
         ?.getOrNull()
 

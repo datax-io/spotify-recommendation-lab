@@ -136,7 +136,7 @@ class TrainingViewController: UIViewController {
             // Generate diff data (subtract original model params from updated params) and report the final diffs as
             guard let diffStateData = modelParams.generateDiffData() else {
                 DispatchQueue.main.sync {
-                    self.appendText("Failed to genereate diff")
+                    self.appendText("Failed to generate diff")
                 }
                 return
             }

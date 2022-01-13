@@ -21,6 +21,9 @@ class ParcelHelper<R, D>(
 
         private const val baseUrl = "https://api.oasislabs.com/parcel/v1"
 
+        const val defaultAppId = "A4Sauk7GjUYKraxLroie735"
+        const val defaultClientId = "CVLTi6RcC1sHN82kSqwaQa1"
+
         private val jsonCodec = Json { ignoreUnknownKeys = true }
 
     }
@@ -86,7 +89,7 @@ class ParcelHelper<R, D>(
         .also { notifyChanged() }
 
     /**
-     * https://docs.oasislabs.com/parcel/latest/parcel-api.html#operation/uploadDocument
+     * See https://docs.oasislabs.com/parcel/latest/parcel-api.html#operation/uploadDocument
      */
     suspend fun uploadDocument(data: D, fileName: String): ParcelDocument {
         val metadata = jsonObjectOf(
@@ -102,10 +105,17 @@ class ParcelHelper<R, D>(
         ).let {
             kotlin.runCatching {
                 formDataUploadDelegate.uploadFormData(it.url, it.token, data, metadata.toString())
-                    .let { jsonCodec.decodeFromString<ParcelDocument>(it) }
-                    .also { grantDocumentToApp(it.id) }
-            }
-        }.onFailure { it.printStackTrace() }.getOrThrow()
+            }.onFailure { it.printStackTrace() }.getOrThrow()
+                .let { responseString ->
+                    kotlin.runCatching { jsonCodec.decodeFromString<ParcelDocument>(responseString) }
+                        .onFailure {
+                            println(responseString)
+                            it.printStackTrace()
+                        }
+                        .getOrThrow()
+                }
+                .also { grantDocumentToApp(it.id) }
+        }
     }
 
     fun getTokenRequest(clientId: String, authCode: String) =
