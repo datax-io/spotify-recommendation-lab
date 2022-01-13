@@ -2,6 +2,7 @@ package io.datax.shared
 
 data class TrackTrainingData(
     val score: Float,
+    val normalizedScore: Float? = null,
     val user: Int,
     val acousticness: Float,
     val danceability: Float,
@@ -13,4 +14,19 @@ data class TrackTrainingData(
     val speechiness: Float,
     val tempo: Float,
     val valence: Float,
-)
+) {
+
+    val trainingDataRow
+        get() = listOf(
+            acousticness,
+            danceability,
+            durationMs,
+            energy,
+            instrumentalness,
+            liveness,
+            loudness,
+            speechiness,
+            tempo,
+            valence,
+        )
+}

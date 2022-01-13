@@ -16,6 +16,7 @@ class WorkflowManager<R, D>(
     databaseDriverFactory: DatabaseDriverFactory,
     openIDHelperDelegate: OpenIDHelperDelegate<R>,
     formDataUploadDelegate: FormDataUploadDelegate<D>,
+    remoteDataFetcher: RemoteDataFetcher? = null,
 ) {
 
     companion object {
@@ -42,12 +43,14 @@ class WorkflowManager<R, D>(
         preferences = preferences,
         host = preferences?.getPygridHost(),
         authToken = preferences?.getPygridToken(),
+        participantId = preferences?.getParticipantId() ?: 1,
     )
 
     val spotifyHistoryFetcher: SpotifyHistoryFetcher = SpotifyHistoryFetcher(
-        databaseDriverFactory = databaseDriverFactory,
         preferences = preferences,
-        participantId = preferences?.getParticipantId() ?: 1,
+        externalDataPrefix = preferences?.getExternalDataPrefix(),
+        databaseDriverFactory = databaseDriverFactory,
+        remoteDataFetcher = remoteDataFetcher,
     )
 
     private var changesJob: Job = Job()
@@ -91,6 +94,14 @@ class WorkflowManager<R, D>(
 
     suspend fun fetchHistory(): SpotifyHistoryStatus? = spotifyHelper.token
         ?.let { kotlin.runCatching { spotifyHistoryFetcher.fetchHistory(it) } }
+        ?.onFailure { it.printStackTrace() }
+        ?.getOrNull()
+
+    suspend fun loadExternalData(): SpotifyHistoryStatus? = spotifyHistoryFetcher.externalDataPrefix
+        ?.let { kotlin.runCatching {
+            println("Kotlin run catching in WorkflowManager.loadExternalData() with externalDataPrefix = ${spotifyHistoryFetcher.externalDataPrefix} and with ${pygridHelper.numOfParticipants} participants")
+            spotifyHistoryFetcher.loadExternalData(pygridHelper.numOfParticipants)
+        } }
         ?.onFailure { it.printStackTrace() }
         ?.getOrNull()
 

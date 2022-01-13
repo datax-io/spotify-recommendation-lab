@@ -5,17 +5,19 @@ import kotlinx.serialization.Serializable
 
 data class SpotifyHistoryStatus(
     val trackCount: Int,
+    val externalDataCount: Map<Int, Int>,
 )
 
 data class CachedTrack(
     val id: String,
-    var album: String?,
+    val trackId: String,
+    val userId: String,
     val inRecentTracks: Boolean,
     val inSavedTracks: Boolean,
     val inTopTracksShortTerm: Boolean,
     val inTopTracksMediumTerm: Boolean,
     val inTopTracksLongTerm: Boolean,
-    val inAlbum: Boolean,
+    val inAlbum: Boolean, // if true, the album containing this track is saved by the user.
     val inOwnPlaylists: Boolean,
     val inForeignPlaylists: Boolean,
     var albumInOwnPlaylists: Boolean?,
@@ -27,6 +29,8 @@ data class CachedTrack(
 
     private val inSavedOrOwnPlaylists: Boolean
         get() = inSavedTracks || inOwnPlaylists
+
+    var normalizedScore: Float? = null
 
     // see https://gitlab.com/dogcoin/decentralized-ml/deml-recommendation-system-model-lab/-/blob/master/src/track.py
     val score: Float
@@ -48,8 +52,25 @@ data class CachedTrack(
             (inAlbum && !inSavedOrOwnPlaylists) to -1.0f,
             (albumInOwnPlaylists == true && !inSavedOrOwnPlaylists) to -1.0f,
         ).filter { (condition, _) -> condition }
-            .fold(1.0f) { acc, (_, value) -> acc + value }
+            .fold(0.0f) { acc, (_, value) -> acc + value }
+
 }
+
+fun Map<String, String>.asCacheTrack(participantId: Int) = CachedTrack(
+    id = this["id"]!! + participantId.toString(),
+    trackId = this["id"]!!,
+    userId = participantId.toString(),
+    inRecentTracks = this["in_recent"] == "True",
+    inSavedTracks = this["in_saved"] == "True",
+    inTopTracksShortTerm = this["in_top_tracks_short_term"] == "True",
+    inTopTracksMediumTerm = this["in_top_tracks_medium_term"] == "True",
+    inTopTracksLongTerm = this["in_top_tracks_long_term"] == "True",
+    inAlbum = this["in_album"] == "True",
+    inOwnPlaylists = this["in_own_playlists"] == "True",
+    inForeignPlaylists = this["in_foreign_playlists"] == "True",
+    albumInOwnPlaylists = this["album_in_own_playlists"] == "True",
+    albumInForeignPlaylists = this["album_in_foreign_playlists"] == "True",
+)
 
 @Serializable
 data class TrackFeature(
@@ -66,7 +87,21 @@ data class TrackFeature(
     val mode: Int,
     val speechiness: Float,
     val tempo: Float,
-    @SerialName("time_signature")
-    val timeSignature: Int,
     val valence: Float,
+)
+
+fun Map<String, String>.asFeature() = TrackFeature(
+    id = this["id"]!!,
+    acousticness = this["acousticness"]!!.toFloat(),
+    danceability = this["danceability"]!!.toFloat(),
+    durationMs = this["duration_ms"]!!.toInt(),
+    energy = this["energy"]!!.toFloat(),
+    instrumentalness = this["instrumentalness"]!!.toFloat(),
+    key = this["key"]!!.toInt(),
+    liveness = this["liveness"]!!.toFloat(),
+    loudness = this["loudness"]!!.toFloat(),
+    mode = this["mode"]!!.toInt(),
+    speechiness = this["speechiness"]!!.toFloat(),
+    tempo = this["tempo"]!!.toFloat(),
+    valence = this["valence"]!!.toFloat(),
 )

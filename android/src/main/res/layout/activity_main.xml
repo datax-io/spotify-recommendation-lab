@@ -257,13 +257,6 @@
       android:text="Start training"
       android:enabled="false" />
 
-    <androidx.appcompat.widget.AppCompatButton
-      android:id="@+id/button_upload_dummy_document"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:text="Upload dummy document"
-      android:enabled="false" />
-
   </androidx.appcompat.widget.LinearLayoutCompat>
 
 

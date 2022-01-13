@@ -29,9 +29,10 @@ suspend fun Flow<Track>.toIdSet(): Set<String> = this.map { it.id }.toSet()
 fun Sequence<Track>.toIdSet(): Set<String> = this.map { it.id }.toSet()
 
 class SpotifyHistoryFetcher(
-    databaseDriverFactory: DatabaseDriverFactory,
     private val preferences: Preferences? = null,
-    participantId: Int,
+    externalDataPrefix: String? = null,
+    databaseDriverFactory: DatabaseDriverFactory,
+    private val remoteDataFetcher: RemoteDataFetcher? = null,
 ) : Changeable() {
 
     companion object {
@@ -46,6 +47,13 @@ class SpotifyHistoryFetcher(
         }
     }
 
+    var externalDataPrefix: String? = externalDataPrefix
+        set(value) {
+            field = value
+            preferences?.saveExternalDataPrefix(value)
+            notifyChanged()
+        }
+
     private val client = HttpClient {
         install(JsonFeature) {
             serializer = KotlinxSerializer(kotlinx.serialization.json.Json {
@@ -55,19 +63,66 @@ class SpotifyHistoryFetcher(
         }
     }
 
-    var participantId = participantId
-        set(value) {
-            field = value
-            preferences?.saveParticipantId(value)
-            notifyChanged()
-        }
-
     private lateinit var getHeader: (HeadersBuilder.() -> Unit)
 
     private val pageLimit = 49
     private val baseUrl = "https://api.spotify.com/v1"
 
     private val trackRepo: TrackRepo = TrackRepo(databaseDriverFactory)
+    private var externalDataCount = mutableMapOf<Int, Int>()
+
+    suspend fun loadExternalData(numOfParticipants: Int): SpotifyHistoryStatus {
+
+        val allExternalDataCachedTracks = mutableSetOf<CachedTrack>()
+        val allExternalDataTrackFeatures = mutableSetOf<TrackFeature>()
+
+        externalDataCount.clear()
+
+        for (participantId in 1..numOfParticipants) {
+            val url = "$externalDataPrefix/$participantId.csv"
+            println("Loading data from $url")
+            var trackCastingErrorCount = 0
+            trackRepo.clearTracksByUserId(participantId.toString())
+            remoteDataFetcher?.fetchCsv(url)
+                ?.mapNotNull { trackObj ->
+                    runCatching {
+                        trackObj.asCacheTrack(participantId) to trackObj.asFeature()
+                    }.onFailure {
+                        println("Track: $trackObj")
+                        println("Error occurred while casting: $it")
+                        trackCastingErrorCount += 1
+                    }.getOrNull()
+                }
+                ?.forEach { (track, feature) ->
+                    allExternalDataCachedTracks.add(track)
+                    allExternalDataTrackFeatures.add(feature)
+                }
+            trackCastingErrorCount
+                .takeIf { it > 0 }
+                ?.also { println("Track casting failed for participant $participantId: $it tracks") }
+        }
+
+        allExternalDataCachedTracks
+            .asSequence()
+            .chunked(800)
+            .asFlow()
+            .collect { trackRepo.cacheTracks(it) }
+
+        allExternalDataTrackFeatures
+            .asSequence()
+            .chunked(800)
+            .asFlow()
+            .collect { trackRepo.cacheTrackFeatures(it.toSet()) }
+
+        for (participantId in 1..numOfParticipants) {
+            externalDataCount[participantId] =
+                trackRepo.getAvailableTrackCountByUserId(userId = participantId.toString())
+        }
+
+        val status = getStatus()
+        notifyChanged()
+        return status
+    }
 
     suspend fun fetchHistory(spotifyToken: String): SpotifyHistoryStatus {
         getHeader = {
@@ -76,7 +131,7 @@ class SpotifyHistoryFetcher(
 
         val currentUserId = getCurrentUserId()
 
-        trackRepo.clearTracks()
+        trackRepo.clearTracksByUserId("0")
 
         val allTracks = mutableSetOf<Track>()
 
@@ -140,33 +195,37 @@ class SpotifyHistoryFetcher(
             }
         }
 
+        allTracks.asSequence().chunked(800).asFlow().collect {
+            trackRepo.cacheTracks(
+                it.map { track ->
+                    val album = allTracks.find { it.id == track.id }?.album
+                    CachedTrack(
+                        id = track.id + "0",
+                        trackId = track.id,
+                        userId = "0",
+                        inRecentTracks = recentTrackIds.contains(track.id),
+                        inSavedTracks = savedTrackIds.contains(track.id),
+                        inTopTracksShortTerm = topShortTermTrackIds.contains(track.id),
+                        inTopTracksMediumTerm = topMediumTermTrackIds.contains(track.id),
+                        inTopTracksLongTerm = topLongTermTrackIds.contains(track.id),
+                        inAlbum = inAlbumTrackIds.contains(track.id),
+                        inOwnPlaylists = inOwnPlaylistTrackIds.contains(track.id),
+                        inForeignPlaylists = inForeignPlaylistTrackIds.contains(track.id),
+                        albumInOwnPlaylists = album?.id?.let { inOwnPlaylistsAlbumIds.contains(it) }
+                            ?: false,
+                        albumInForeignPlaylists = album?.id?.let { inForeignPlaylistAlbumIds.contains(it) }
+                            ?: false,
+                    )
+                })
+        }
+
         allTracks
             .asSequence()
             .map { it.id }
-            .chunked(800)
+            .chunked(1200)
             .asFlow()
             .map { getTrackFeatures(trackIds = it.toSet()) }
             .collect { trackFeatures ->
-                trackRepo.cacheTracks(
-                    trackFeatures.map { track ->
-                        val album = allTracks.find { it.id == track.id }?.album
-                        CachedTrack(
-                            id = track.id,
-                            inRecentTracks = recentTrackIds.contains(track.id),
-                            inSavedTracks = savedTrackIds.contains(track.id),
-                            inTopTracksShortTerm = topShortTermTrackIds.contains(track.id),
-                            inTopTracksMediumTerm = topMediumTermTrackIds.contains(track.id),
-                            inTopTracksLongTerm = topLongTermTrackIds.contains(track.id),
-                            inAlbum = inAlbumTrackIds.contains(track.id),
-                            inOwnPlaylists = inOwnPlaylistTrackIds.contains(track.id),
-                            inForeignPlaylists = inForeignPlaylistTrackIds.contains(track.id),
-                            album = album?.name,
-                            albumInOwnPlaylists = album?.id?.let { inOwnPlaylistsAlbumIds.contains(it) }
-                                ?: false,
-                            albumInForeignPlaylists = album?.id?.let { inForeignPlaylistAlbumIds.contains(it) }
-                                ?: false,
-                        )
-                    })
                 trackRepo.cacheTrackFeatures(trackFeatures)
             }
 
@@ -176,8 +235,13 @@ class SpotifyHistoryFetcher(
     }
 
     fun getStatus() = SpotifyHistoryStatus(
-        trackCount = trackRepo.getAvailableTrackCount(),
+        trackCount = trackRepo.getAvailableTrackFeaturesCountByUserId("0"),
+        externalDataCount = externalDataCount,
     )
+
+    fun getReadinessForParticipant(participantId: Int): Boolean {
+        return trackRepo.getAvailableTrackCountByUserId(participantId.toString()) > 0
+    }
 
     private suspend fun getCurrentUserId(): String = client.get<SpotifyUser>("$baseUrl/me") {
         headers { getHeader() }
@@ -245,6 +309,8 @@ class SpotifyHistoryFetcher(
             trackRepo.getCachedTrackFeaturesById(trackIds = trackIds.toList()).map { it.id }.toSet()
 
         val trackIdsToBeFetched: Set<String> = (trackIds - trackIdsFromCache).toSet()
+            .takeIf { it.isNotEmpty() }
+            ?: return emptySet()
 
         println("Getting features of ${trackIdsToBeFetched.size} tracks")
 
@@ -273,9 +339,24 @@ class SpotifyHistoryFetcher(
         notifyChanged()
     }
 
-    fun trainingData(): List<TrackTrainingData> {
-        val tracksMap = trackRepo.getAllCachedTracks().associateBy { it.id }
+    fun trainingData(participantId: Int, normalizeScores: Boolean = true): List<TrackTrainingData> {
+        val tracksMap: Map<String, CachedTrack>
+        if (normalizeScores) {
+            val trackHelper = TrackHelper()
+            tracksMap = trackHelper.resample(trackRepo.getAllCachedTracksByUserId(userId = participantId.toString()))
+                .associateBy { it.trackId }
+            println("participantId = $participantId")
+            println("normalizeScores = $normalizeScores")
+            println("normalizedTracksMap: ${tracksMap.size}")
+        } else {
+            tracksMap =
+                trackRepo.getAllCachedTracksByUserId(userId = participantId.toString()).associateBy { it.trackId }
+            println("participantId = $participantId")
+            println("normalizeScores = $normalizeScores")
+            println("tracksMap: ${tracksMap.size}")
+        }
         val featuresMap = trackRepo.getAllCachedTrackFeatures().associateBy { it.id }
+        println("featuresMap: ${featuresMap.size}")
         val trackIds = tracksMap.keys intersect featuresMap.keys
 
         val features = featuresMap.filterValues { it.id in trackIds }.values
@@ -307,7 +388,8 @@ class SpotifyHistoryFetcher(
             .map { (track, feature) ->
                 TrackTrainingData(
                     score = track.score,
-                    user = 0,
+                    normalizedScore = track.normalizedScore,
+                    user = participantId,
                     acousticness = (feature.acousticness - acousticnessMean) / acousticnessStdDev,
                     danceability = (feature.danceability - danceabilityMean) / danceabilityStdDev,
                     durationMs = (feature.durationMs.toFloat() - durationMsMean) / durationMsStdDev,
@@ -320,10 +402,6 @@ class SpotifyHistoryFetcher(
                     valence = (feature.valence - valenceMean) / valenceStdDev,
                 )
             }
-    }
-
-    fun clearTrackFeatureCache() {
-        trackRepo.clearCache()
     }
 
 }

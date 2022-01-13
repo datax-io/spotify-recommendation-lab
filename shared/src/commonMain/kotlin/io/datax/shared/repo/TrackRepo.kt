@@ -12,7 +12,8 @@ class TrackRepo(databaseDriverFactory: DatabaseDriverFactory) {
         tracksToCache.forEach { track ->
             databaseQueries.insertTrack(
                 track.id,
-                track.album,
+                track.trackId,
+                track.userId,
                 track.inRecentTracks,
                 track.inSavedTracks,
                 track.inTopTracksShortTerm,
@@ -41,13 +42,20 @@ class TrackRepo(databaseDriverFactory: DatabaseDriverFactory) {
             mode = it.mode,
             speechiness = it.speechiness,
             tempo = it.tempo,
-            time_signature = it.timeSignature,
             valence = it.valence,
         )
     }
 
     fun getAllCachedTracks(): List<CachedTrack> {
         return databaseQueries.selectAllTracks().executeAsList().asCachedTracks()
+    }
+
+    fun getAllCachedTracksByUserId(userId: String): List<CachedTrack> {
+        return databaseQueries.selectAllTracksByUserId(userId).executeAsList().asCachedTracks()
+    }
+
+    fun getAvailableTrackCountByUserId(userId: String): Int {
+        return databaseQueries.countTracksByUserId(userId).executeAsOne().toInt()
     }
 
     fun getAllCachedTrackFeatures(): List<TrackFeature> {
@@ -62,10 +70,15 @@ class TrackRepo(databaseDriverFactory: DatabaseDriverFactory) {
         return databaseQueries.countTrackFeatures().executeAsOne().toInt()
     }
 
+    fun getAvailableTrackFeaturesCountByUserId(userId: String): Int {
+        return databaseQueries.countTrackFeaturesByUserId(userId).executeAsOne().toInt()
+    }
+
     private fun List<Tracks>.asCachedTracks() = this.map { trackFeature ->
         CachedTrack(
             id = trackFeature.id,
-            album = trackFeature.album,
+            trackId = trackFeature.track_id,
+            userId = trackFeature.user_id,
             inRecentTracks = trackFeature.in_recent_tracks,
             inSavedTracks = trackFeature.in_saved_tracks,
             inTopTracksShortTerm = trackFeature.in_top_tracks_short_term,
@@ -93,13 +106,16 @@ class TrackRepo(databaseDriverFactory: DatabaseDriverFactory) {
             mode = trackFeature.mode,
             speechiness = trackFeature.speechiness,
             tempo = trackFeature.tempo,
-            timeSignature = trackFeature.time_signature,
             valence = trackFeature.valence
         )
     }
 
     fun clearTracks() {
         databaseQueries.deleteAllTracks()
+    }
+
+    fun clearTracksByUserId(userId: String) {
+        databaseQueries.deleteAllTracksByUserId(userId)
     }
 
     fun clearCache() {
