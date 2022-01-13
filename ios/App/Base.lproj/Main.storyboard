@@ -8,10 +8,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
+        <!--Spotify Recommendation Lab-->
         <scene sceneID="ZhW-Ur-QGr">
             <objects>
-                <navigationController interfaceStyle="dark" id="x53-DT-PmL" sceneMemberID="viewController">
+                <navigationController title="Spotify Recommendation Lab" interfaceStyle="dark" id="x53-DT-PmL" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="dxX-oN-1VU">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -24,10 +24,10 @@
             </objects>
             <point key="canvasLocation" x="1234" y="159"/>
         </scene>
-        <!--Auth View Controller-->
+        <!--Spotify Recommendation Lab-->
         <scene sceneID="gwA-tM-Wbt">
             <objects>
-                <viewController interfaceStyle="dark" id="Zcc-do-qYw" customClass="AuthViewController" customModule="App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="Spotify Recommendation Lab" interfaceStyle="dark" id="Zcc-do-qYw" customClass="AuthViewController" customModule="App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="K3W-gr-HCf">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -138,7 +138,7 @@
                                                     <constraint firstAttribute="height" constant="36" id="qD1-vK-G59"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Load"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Load"/>
                                                 <connections>
                                                     <action selector="fetchExternalData" destination="Zcc-do-qYw" eventType="touchUpInside" id="txw-tF-FTb"/>
                                                 </connections>
@@ -167,7 +167,7 @@
                                                     <constraint firstAttribute="width" constant="100" id="eaX-9X-ANe"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
                                                 <connections>
                                                     <action selector="attemptChangeParcelAppId" destination="Zcc-do-qYw" eventType="touchUpInside" id="3TS-dd-red"/>
                                                 </connections>
@@ -190,7 +190,7 @@
                                                     <constraint firstAttribute="width" constant="100" id="vSm-JW-D0a"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
                                                 <connections>
                                                     <action selector="attemptChangeParcelClientId" destination="Zcc-do-qYw" eventType="touchUpInside" id="efZ-6w-X2m"/>
                                                 </connections>
@@ -242,7 +242,7 @@
                                                     <constraint firstAttribute="height" constant="36" id="vQo-dU-eVL"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
                                                 <connections>
                                                     <action selector="attemptChangePygridHost:" destination="Zcc-do-qYw" eventType="touchUpInside" id="Ftr-3D-rtS"/>
                                                 </connections>
@@ -265,7 +265,7 @@
                                                     <constraint firstAttribute="width" constant="100" id="WjJ-mq-9NG"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
                                                 <connections>
                                                     <action selector="attemptChangePygridToken:" destination="Zcc-do-qYw" eventType="touchUpInside" id="Edr-gM-j0G"/>
                                                 </connections>
@@ -288,7 +288,7 @@
                                                     <constraint firstAttribute="width" constant="100" id="qgr-PF-KKA"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="filled" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
                                                 <connections>
                                                     <action selector="attemptChangeParticipantId" destination="Zcc-do-qYw" eventType="touchUpInside" id="cIl-Dk-jNo"/>
                                                 </connections>
@@ -335,7 +335,7 @@
                             <constraint firstItem="yac-CN-p2X" firstAttribute="leading" secondItem="zDU-J0-xY2" secondAttribute="leading" constant="16" id="pjj-zJ-VEP"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="8iA-KK-cKm"/>
+                    <navigationItem key="navigationItem" title="Spotify Recommendation Lab" id="8iA-KK-cKm"/>
                     <connections>
                         <outlet property="changeParcelAppIdButton" destination="sS0-k9-noy" id="Nga-ov-aVQ"/>
                         <outlet property="changeParcelClientIdButton" destination="reV-NM-zuT" id="VjJ-rw-Ag3"/>
@@ -392,8 +392,8 @@
                             <constraint firstItem="V41-Dk-qps" firstAttribute="bottom" secondItem="uLF-0C-86C" secondAttribute="bottom" constant="16" id="giT-b2-KXb"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="iVw-Uz-yVL">
-                        <barButtonItem key="leftBarButtonItem" title="Stop" id="4aZ-k4-sTq">
+                    <navigationItem key="navigationItem" title="Training" id="iVw-Uz-yVL">
+                        <barButtonItem key="leftBarButtonItem" title="Close" id="4aZ-k4-sTq">
                             <connections>
                                 <action selector="stopTraining:" destination="thn-sm-KY4" id="xNK-Pa-Tnq"/>
                             </connections>
