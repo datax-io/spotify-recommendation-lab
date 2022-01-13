@@ -12,6 +12,7 @@ object PreferenceKey {
     const val participantId = "participant_id"
     const val pygridHost = "pygrid_host"
     const val pygridToken = "pygrid_token"
+    const val externalDataPrefix = "external_data_prefix"
 
 }
 
@@ -56,3 +57,9 @@ fun Preferences.savePygridHost(host: String) = setString(PreferenceKey.pygridHos
 
 fun Preferences.getPygridToken(): String? = getString(PreferenceKey.pygridToken)
 fun Preferences.savePygridToken(token: String) = setString(PreferenceKey.pygridToken, token)
+
+fun Preferences.getExternalDataPrefix(): String? = getString(PreferenceKey.externalDataPrefix)
+fun Preferences.saveExternalDataPrefix(prefix: String?) = when (prefix) {
+    null -> removeString(PreferenceKey.externalDataPrefix)
+    else -> setString(PreferenceKey.externalDataPrefix, prefix)
+}

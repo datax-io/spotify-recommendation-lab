@@ -16,11 +16,7 @@
 		DE9695242739041700DA5B37 /* WorkflowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9695232739041700DA5B37 /* WorkflowManager.swift */; };
 		DEB6C0622772D1DB001B8736 /* MovieLensLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEB6C0612772D1DB001B8736 /* MovieLensLoader.swift */; };
 		DECC557D274B5727008902AD /* TrainingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC557C274B5727008902AD /* TrainingViewController.swift */; };
-		DECC5584274B5E21008902AD /* t10k-images-idx3-ubyte in Resources */ = {isa = PBXBuildFile; fileRef = DECC557F274B5E21008902AD /* t10k-images-idx3-ubyte */; };
-		DECC5585274B5E21008902AD /* t10k-labels-idx1-ubyte in Resources */ = {isa = PBXBuildFile; fileRef = DECC5580274B5E21008902AD /* t10k-labels-idx1-ubyte */; };
-		DECC5586274B5E21008902AD /* train-images-idx3-ubyte in Resources */ = {isa = PBXBuildFile; fileRef = DECC5581274B5E21008902AD /* train-images-idx3-ubyte */; };
-		DECC5587274B5E21008902AD /* train-labels-idx1-ubyte in Resources */ = {isa = PBXBuildFile; fileRef = DECC5582274B5E21008902AD /* train-labels-idx1-ubyte */; };
-		DECC5588274B5E21008902AD /* MNISTLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC5583274B5E21008902AD /* MNISTLoader.swift */; };
+		DECC5588274B5E21008902AD /* DataLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECC5583274B5E21008902AD /* DataLoader.swift */; };
 		DEE29336273266ED008C70A9 /* AuthViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE29335273266ED008C70A9 /* AuthViewController.swift */; };
 		DEF9F6C62774E16C00AF11B7 /* OpenIdDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEF9F6C52774E16C00AF11B7 /* OpenIdDelegate.swift */; };
 		E39C440219931E339617A342 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 03D8E134BB57F52D76A6DE9A /* Pods_App.framework */; };
@@ -54,11 +50,7 @@
 		DE9695232739041700DA5B37 /* WorkflowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkflowManager.swift; sourceTree = "<group>"; };
 		DEB6C0612772D1DB001B8736 /* MovieLensLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovieLensLoader.swift; sourceTree = "<group>"; };
 		DECC557C274B5727008902AD /* TrainingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrainingViewController.swift; sourceTree = "<group>"; };
-		DECC557F274B5E21008902AD /* t10k-images-idx3-ubyte */ = {isa = PBXFileReference; lastKnownFileType = text; path = "t10k-images-idx3-ubyte"; sourceTree = "<group>"; };
-		DECC5580274B5E21008902AD /* t10k-labels-idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = text; path = "t10k-labels-idx1-ubyte"; sourceTree = "<group>"; };
-		DECC5581274B5E21008902AD /* train-images-idx3-ubyte */ = {isa = PBXFileReference; lastKnownFileType = text; path = "train-images-idx3-ubyte"; sourceTree = "<group>"; };
-		DECC5582274B5E21008902AD /* train-labels-idx1-ubyte */ = {isa = PBXFileReference; lastKnownFileType = text; path = "train-labels-idx1-ubyte"; sourceTree = "<group>"; };
-		DECC5583274B5E21008902AD /* MNISTLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MNISTLoader.swift; sourceTree = "<group>"; };
+		DECC5583274B5E21008902AD /* DataLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataLoader.swift; sourceTree = "<group>"; };
 		DEE29335273266ED008C70A9 /* AuthViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthViewController.swift; sourceTree = "<group>"; };
 		DEF9F6C52774E16C00AF11B7 /* OpenIdDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenIdDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,7 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				DEB6C0612772D1DB001B8736 /* MovieLensLoader.swift */,
-				DECC557E274B5DFD008902AD /* MNIST */,
+				DECC5583274B5E21008902AD /* DataLoader.swift */,
 				7555FF7E242A565900829871 /* AppDelegate.swift */,
 				7555FF80242A565900829871 /* SceneDelegate.swift */,
 				DEE29335273266ED008C70A9 /* AuthViewController.swift */,
@@ -128,18 +120,6 @@
 				C0206EC5184AFB3167932DFD /* Pods-App.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = "<group>";
-		};
-		DECC557E274B5DFD008902AD /* MNIST */ = {
-			isa = PBXGroup;
-			children = (
-				DECC5583274B5E21008902AD /* MNISTLoader.swift */,
-				DECC557F274B5E21008902AD /* t10k-images-idx3-ubyte */,
-				DECC5580274B5E21008902AD /* t10k-labels-idx1-ubyte */,
-				DECC5581274B5E21008902AD /* train-images-idx3-ubyte */,
-				DECC5582274B5E21008902AD /* train-labels-idx1-ubyte */,
-			);
-			name = MNIST;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,12 +183,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DECC5584274B5E21008902AD /* t10k-images-idx3-ubyte in Resources */,
 				7555FF8B242A565B00829871 /* LaunchScreen.storyboard in Resources */,
 				7555FF85242A565B00829871 /* Assets.xcassets in Resources */,
-				DECC5586274B5E21008902AD /* train-images-idx3-ubyte in Resources */,
-				DECC5585274B5E21008902AD /* t10k-labels-idx1-ubyte in Resources */,
-				DECC5587274B5E21008902AD /* train-labels-idx1-ubyte in Resources */,
 				DE3AC2242732586100D23C19 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -263,7 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DECC557D274B5727008902AD /* TrainingViewController.swift in Sources */,
-				DECC5588274B5E21008902AD /* MNISTLoader.swift in Sources */,
+				DECC5588274B5E21008902AD /* DataLoader.swift in Sources */,
 				7555FF7F242A565900829871 /* AppDelegate.swift in Sources */,
 				DE9695242739041700DA5B37 /* WorkflowManager.swift in Sources */,
 				DEF9F6C62774E16C00AF11B7 /* OpenIdDelegate.swift in Sources */,
@@ -419,7 +395,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = N43BZ2ZQHU;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -448,7 +424,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "";
-				DEVELOPMENT_TEAM = N43BZ2ZQHU;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

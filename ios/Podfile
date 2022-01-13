@@ -5,9 +5,10 @@ target 'App' do
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  pod 'OpenMinedSwiftSyft', '~> 0.5.0-rc.1'
+  pod 'OpenMinedSwiftSyft', :path => '../../swiftsyft-parcel'
   pod 'Alamofire', '~> 5.4'
   pod 'AppAuth', '~> 1.4.0'
+  pod 'SwiftCSV', '~> 0.6'
 
   pod 'shared', :path => '../shared'
 

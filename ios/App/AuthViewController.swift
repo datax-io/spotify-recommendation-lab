@@ -34,13 +34,15 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     @IBOutlet weak var changePygridHostButton: UIButton!
     @IBOutlet weak var currentPygridTokenLabel: UILabel!
     @IBOutlet weak var changePygridTokenButton: UIButton!
+    @IBOutlet weak var fetchExternalDataButton: UIButton!
+    @IBOutlet weak var fetchExternalDataActivityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var fetchExternalDataLabel: UILabel!
     @IBOutlet weak var currentParticipantLabel: UILabel!
-    
     @IBOutlet weak var changeParticipantIdButton: UIButton!
-    @IBOutlet weak var startTrainingButton: UIButton!
     
-    @IBOutlet weak var uploadDummyDocumentButton: UIButton!
-    
+    @IBOutlet weak var startTrainingButtonWithApiData: UIButton!
+    @IBOutlet weak var startTrainingButtonWithCsvData: UIButton!
+
     var token: String?
     static var tokenKey = "token"
         
@@ -79,15 +81,16 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
     
     func onParamsChanged() {
-        self.currentParticipantLabel.text = "Participant ID: \(String(workflowManager.spotifyHistoryFetcher.participantId))"
+        self.currentParticipantLabel.text = "Participant ID: \(String(workflowManager.pygridHelper.participantId))"
         
         onSpotifyClientChanged(clientId: workflowManager.spotifyHelper.clientId)
         onSpotifyUserChanged(user: workflowManager.spotifyHelper.user)
         onParcelParamsChanged(clientId: workflowManager.parcelHelper.clientId, appId: workflowManager.parcelHelper.appId)
         onParcelUserChanged(user: workflowManager.parcelHelper.user)
-        onPygridParamsChanged(host: workflowManager.pygridHelper.host, authToken: workflowManager.pygridHelper.authToken)
+        onPygridParamsChanged(host: workflowManager.pygridHelper.host, authToken: workflowManager.pygridHelper.authToken, externalDataPrefix: workflowManager.spotifyHistoryFetcher.externalDataPrefix)
         onSpotifyHistoryStatusChanged(status: workflowManager.spotifyHistoryFetcher.getStatus())
         onTrainingReadinessChanged(ready: workflowManager.ready)
+        onTrainingWithCsvReadinessChanged(participantId: workflowManager.pygridHelper.participantId)
     }
     
     func onSpotifyClientChanged(clientId: String?) {
@@ -137,40 +140,58 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
             print(result)
         }
     }
-    
+
+    @IBAction func fetchExternalData() {
+        promptForInput(title: "External Data Prefix", message: "Enter new External Data Prefix",
+                       value: workflowManager.spotifyHistoryFetcher.externalDataPrefix ?? "") {
+            workflowManager.spotifyHistoryFetcher.externalDataPrefix = $0
+            self.fetchExternalDataButton.isEnabled = false
+            self.fetchExternalDataLabel.text = "Fetching external data..."
+            self.fetchExternalDataActivityIndicator.startAnimating()
+            workflowManager.loadExternalData() { result, _ in
+                print(result)
+            }
+        }
+    }
+
     func onSpotifyHistoryStatusChanged(status: SpotifyHistoryStatus?) {
         self.fetchHistoryActivityIndicator.stopAnimating()
-        guard let count = status?.trackCount else {
+        self.fetchExternalDataButton.isEnabled = true
+        self.fetchExternalDataActivityIndicator.stopAnimating()
+        guard let trackCount = status?.trackCount else {
             self.historyResultLabel.text = "No result"
             return
         }
-        self.historyResultLabel.text = "Result: \(count) tracks"
+        self.historyResultLabel.text = "Result: \(trackCount) tracks"
+        let externalDataCountValues = status?.externalDataCount.values.map {$0.intValue}
+        if (externalDataCountValues == nil) {
+            self.fetchExternalDataLabel.text = "No external data loaded"
+        } else {
+            self.fetchExternalDataLabel.text = "External data loaded: \(externalDataCountValues!.count)"
+        }
+        onTrainingWithCsvReadinessChanged(participantId: workflowManager.pygridHelper.participantId)
     }
     
     func onTrainingReadinessChanged(ready: Bool) {
-        self.startTrainingButton.isEnabled = ready
-        self.uploadDummyDocumentButton.isEnabled = ready
+        self.startTrainingButtonWithApiData.isEnabled = ready
     }
 
-    func onPygridParamsChanged(host: String?, authToken: String?) {
+    func onTrainingWithCsvReadinessChanged(participantId: Int32) {
+        self.startTrainingButtonWithCsvData.isEnabled = workflowManager.spotifyHistoryFetcher.getReadinessForParticipant(participantId: participantId) && workflowManager.parcelHelper.ready && workflowManager.pygridHelper.ready
+    }
+
+    func onPygridParamsChanged(host: String?, authToken: String?, externalDataPrefix: String?) {
         self.currentPygridHostLabel.text = host.map {"Host: \($0)"} ?? "Host not set"
         self.currentPygridTokenLabel.text = authToken != nil ? "Auth token set" : "Auth token not set"
-    }
-
-    @IBAction func uploadDocument(_ sender: Any) {
-        guard let data = "Test content".data(using: .utf8) else {
-            return
-        }
-        workflowManager.parcelHelper.uploadDocument(data: NSData(data: data), fileName: "test.txt") { document, error in
-            print(document)
-        }
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let vc = segue.destination
         switch vc {
         case let trainingVC as TrainingViewController:
-            trainingVC.mockData = "data"
+            let sourceParticipantId = sender as? Int ?? 0
+            trainingVC.sourceParticipantId = sourceParticipantId
+            break
         default:
             print("Unknown destination type")
         }
@@ -213,10 +234,17 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
     
     @IBAction func attemptChangeParticipantId() {
-        promptForInput(title: "Participant ID", message: "Enter new Participant ID",
-                       value: String(workflowManager.spotifyHistoryFetcher.participantId)) {
-            workflowManager.spotifyHistoryFetcher.participantId = Int32($0)!
+        let actionSheet = UIAlertController(title: "Select new Participant ID", message: nil, preferredStyle: .actionSheet)
+        for i in 1...workflowManager.pygridHelper.numOfParticipants {
+            let action = UIAlertAction(title: "CSV data - User \(i)", style: .default) { _ in
+                workflowManager.pygridHelper.participantId = i
+                self.onTrainingWithCsvReadinessChanged(participantId: i)
+            }
+            actionSheet.addAction(action)
         }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        actionSheet.addAction(cancelAction)
+        self.present(actionSheet, animated: true, completion: nil)
     }
     
     func promptForInput(title: String, message: String, value: String, valueHandler: @escaping ((String) -> Void)) {
@@ -233,6 +261,14 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
         self.present(alert, animated: true, completion: nil)
     }
     
+    @IBAction func attemptStartTrainingWithApiData(_ sender: Any) {
+        self.performSegue(withIdentifier: "train", sender: 0)
+    }
+
+    @IBAction func attemptStartTrainingWithCsvData(_ sender: Any) {
+        self.performSegue(withIdentifier: "train", sender: Int(workflowManager.pygridHelper.participantId))
+    }
+
 }
 
 extension Data {

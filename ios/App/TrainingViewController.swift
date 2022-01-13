@@ -14,8 +14,6 @@ import AppAuth
 
 class TrainingViewController: UIViewController {
 
-    var mockData: String?
-
     private var syftJob: SyftJob?
     private var syftClient: SyftClient?
 
@@ -23,153 +21,38 @@ class TrainingViewController: UIViewController {
 
     @IBOutlet weak var stopButton: UIBarButtonItem!
     
-    let data = workflowManager.spotifyHistoryFetcher.trainingData()
+    var data: [TrackTrainingData] = []
 
     let pygridHost = workflowManager.pygridHelper.host
-
     let pygridAuthToken = workflowManager.pygridHelper.authToken
+
+    let modelName = workflowManager.pygridHelper.modelName
+    let modelVersion = workflowManager.pygridHelper.modelVersion
+
+    var sourceParticipantId = Int(workflowManager.pygridHelper.participantId)
+    let participantId = Int(workflowManager.pygridHelper.participantId) // 1-based
+    let numOfParticipants = Int(workflowManager.pygridHelper.numOfParticipants)
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        print(self.mockData)
-        
         self.trainingResultLabel.text = ""
-        appendText("Data: \(data.count)")
 
-        self.startTrainingMNIST()
-        
-    }
+        appendText(sourceParticipantId == 0 ? "Data source: API" : "Data source: CSV")
+        appendText("Participant ID: \(participantId)")
 
-    func startTrainingMNIST() {
-        guard let host = pygridHost else {
-            print("PyGrid host is not set")
-            return
-        }
-        guard let syftClient = SyftClient(url: URL(string: host)!, authToken: pygridAuthToken) else {
-            appendText("No syft client")
+        data = workflowManager.spotifyHistoryFetcher.trainingData(participantId: Int32(sourceParticipantId), normalizeScores: true)
+
+        appendText("Data: \(data.count) tracks")
+
+        guard data.count > 0 else {
+            appendText("No data")
             return
         }
 
-        self.syftClient = syftClient
-        appendText("Connecting to \(host)")
-
-        self.syftJob = syftClient.newJob(modelName: "mnist", version: "1.0")
-
-        self.syftJob?.onReady(execute: { modelParams, plans, clientConfig, modelReport in
-            DispatchQueue.main.sync {
-                self.appendText("Loading data")
-            }
-
-            // This returns an array for each MNIST image and the corresponding label as PyTorch tensor
-            // It divides the training data and the label by batches
-            guard let MNISTDataAndLabelTensors = try? MNISTLoader.loadAsTensors(setType: .train) else {
-                return
-            }
-
-            // This loads the MNIST tensor into a dataloader to use for iterating during training
-            let dataLoader = MultiTensorDataLoader(dataset: MNISTDataAndLabelTensors, shuffle: true, batchSize: 64)
-            
-            DispatchQueue.main.sync {
-                self.appendText("Training")
-            }
-
-            // Iterate through each batch of MNIST data and label
-            for batchedTensors in dataLoader {
-
-                // We need to create an autorelease pool to release the training data from memory after each loop
-                autoreleasepool {
-
-                    // Preprocess MNIST data by flattening all of the MNIST batch data as a single array
-                    let MNISTTensors = batchedTensors[0].reshape([-1, 784])
-
-                    // Preprocess the label ( 0 to 9 ) by creating one-hot features and then flattening the entire thing
-                    let labels = batchedTensors[1]
-
-                    // Add batch_size, learning_rate and model_params as tensors
-                    let batchSize = [UInt32(clientConfig.batchSize)]
-                    let learningRate = [clientConfig.learningRate]
-
-                    guard
-                        let batchSizeTensor = TorchTensor.new(array: batchSize, size: [1]),
-                        let learningRateTensor = TorchTensor.new(array: learningRate, size: [1]) ,
-                        let modelParamTensors = modelParams.paramTensorsForTraining else
-                    {
-                        return
-                    }
-
-                    // Execute the torchscript plan with the training data, validation data, batch size, learning rate and model params
-                    let result = plans["training_plan"]?.forward([TorchIValue.new(with: MNISTTensors),
-                                                                  TorchIValue.new(with: labels),
-                                                                  TorchIValue.new(with: batchSizeTensor),
-                                                                  TorchIValue.new(with: learningRateTensor),
-                                                                  TorchIValue.new(withTensorList: modelParamTensors)])
-
-                    // Example returns a list of tensors in the folowing order: loss, accuracy, model param 1,
-                    // model param 2, model param 3, model param 4
-                    guard let tensorResults = result?.toTensorList() else {
-                        return
-                    }
-
-                    let lossTensor = tensorResults[0]
-                    lossTensor.print()
-                    let loss = lossTensor.item()
-
-                    let accuracyTensor = tensorResults[1]
-                    accuracyTensor.print()
-
-                    // Get updated param tensors and update them in param tensors holder
-                    let param1 = tensorResults[2]
-                    let param2 = tensorResults[3]
-                    let param3 = tensorResults[4]
-                    let param4 = tensorResults[5]
-
-                    modelParams.paramTensorsForTraining = [param1, param2, param3, param4]
-
-                }
-            }
-
-            // Generate diff data (subtract original model params from updated params) and report the final diffs as
-            guard let diffStateData = modelParams.generateDiffData() else {
-                return
-            }
-            
-            DispatchQueue.main.sync {
-                self.appendText("Reporting diff")
-            }
-
-            // Submit model params diff to server
-            modelReport(diffStateData)
-            
-            // TODO upload via AF
-            DispatchQueue.main.sync {
-                self.appendText("Done")
-            }
-
-        })
-
-        self.syftJob?.onRejected(execute: { timeout in
-            DispatchQueue.main.sync {
-                self.appendText("Rejected")
-            }
-        })
-
-        self.syftJob?.onError(execute: { error in
-            print(error)
-            DispatchQueue.main.sync {
-                self.appendText(error.localizedDescription)
-            }
-        })
-
-        self.syftJob?.start(chargeDetection: false, wifiDetection: false)
-
+        self.startTraining()
     }
 
     func startTraining() {
-        
-        guard let MovieLensDataAndLabelTensors = try? MovieLensLoader.loadAsTensors(data: self.data, setType: .train) else {
-            return
-        }
-        
         guard let host = pygridHost else {
             print("PyGrid host is not set")
             return
@@ -179,102 +62,117 @@ class TrainingViewController: UIViewController {
             return
         }
 
+        guard let featureAndLabelTensors = try? MovieLensLoader.loadAsTensors(data: self.data, setType: .train) else {
+            return
+        }
+
+        appendText("Model: \(modelName)")
+        appendText("Version: \(modelVersion)")
+
         self.syftClient = syftClient
         appendText("Connecting to \(host)")
 
-        self.syftJob = syftClient.newJob(modelName: "mnist", version: "1.0") // TODO model name
+        let job = syftClient.newJob(modelName: modelName, version: modelVersion)
+        self.syftJob = job
 
-        self.syftJob?.onReady(execute: { modelParams, plans, clientConfig, modelReport in
+        job.onReady(execute: { modelParams, plans, clientConfig, modelReport in
+            let batchSize = clientConfig.batchSize
+
             DispatchQueue.main.sync {
-                self.appendText("Loading data")
+                self.appendText("Loading data, batch size = \(batchSize)")
             }
 
-            let dataLoader = MultiTensorDataLoader(dataset: MovieLensDataAndLabelTensors, shuffle: true, batchSize: 64)
+            let dataLoader = MultiTensorDataLoader(dataset: featureAndLabelTensors, shuffle: true, batchSize: batchSize)
 
             DispatchQueue.main.sync {
-                self.appendText("Training")
+                self.appendText("Training...")
             }
 
             for batchedTensors in dataLoader {
 
                 autoreleasepool {
 
-                    let trackTensors = batchedTensors[0]
+                    let featureTensors = batchedTensors[0]
                     let labelTensors = batchedTensors[1]
 
-                    // Add batch_size, learning_rate and model_params as tensors
-                    let batchSize = [UInt32(clientConfig.batchSize)]
-                    let learningRate = [clientConfig.learningRate]
+                    let learningRateArray = [clientConfig.learningRate]
+
+                    var userRow = [UInt8](repeating: 0, count: self.numOfParticipants)
+                    userRow[self.participantId - 1] = 1
+
+                    let userArray = [[UInt8]](repeating: userRow, count: batchSize).flatMap { $0 }
+
+                    let xsArray = [[Float]](repeating: [Float](repeating: 0.0, count: MovieLensLoader.embeddingOutputSize + MovieLensLoader.featureSize), count: batchSize).flatMap { $0 }
 
                     guard
-                        let batchSizeTensor = TorchTensor.new(array: batchSize, size: [1]),
-                        let learningRateTensor = TorchTensor.new(array: learningRate, size: [1]) ,
+                        let userTensors = TorchTensor.new(array: userArray, size: [batchSize, self.numOfParticipants]),
+                        let xTensors = TorchTensor.new(array: xsArray, size: [batchSize, xsArray.count / batchSize]),
+                        let learningRateTensor = TorchTensor.new(array: learningRateArray, size: [1]) ,
                         let modelParamTensors = modelParams.paramTensorsForTraining else
                     {
                         return
                     }
 
-                    let result = plans["training_plan"]?.forward([TorchIValue.new(with: trackTensors),
+                    let result = plans["training_plan"]?.forward([TorchIValue.new(with: featureTensors),
+                                                                  TorchIValue.new(with: userTensors),
+                                                                  TorchIValue.new(with: xTensors),
                                                                   TorchIValue.new(with: labelTensors),
-                                                                  TorchIValue.new(with: batchSizeTensor),
                                                                   TorchIValue.new(with: learningRateTensor),
-                                                                  TorchIValue.new(withTensorList: modelParamTensors)])
+                                                                  TorchIValue.new(withTensorList: modelParamTensors)
+                                                                 ])
 
-                    // model param 2, model param 3, model param 4
                     guard let tensorResults = result?.toTensorList() else {
                         return
                     }
 
                     let lossTensor = tensorResults[0]
                     lossTensor.print()
-                    let loss = lossTensor.item()
 
-                    let accuracyTensor = tensorResults[1]
-                    accuracyTensor.print()
-
-                    let param1 = tensorResults[2]
-                    let param2 = tensorResults[3]
-                    let param3 = tensorResults[4]
-                    let param4 = tensorResults[5]
-
-                    modelParams.paramTensorsForTraining = [param1, param2, param3, param4]
+                    modelParams.paramTensorsForTraining = Array(tensorResults.dropFirst())
 
                 }
             }
 
             // Generate diff data (subtract original model params from updated params) and report the final diffs as
             guard let diffStateData = modelParams.generateDiffData() else {
+                DispatchQueue.main.sync {
+                    self.appendText("Failed to genereate diff")
+                }
                 return
             }
 
             DispatchQueue.main.sync {
-                self.appendText("Reporting diff")
-            }
-
-            // Submit model params diff to server
-            modelReport(diffStateData)
-
-            // TODO upload via AF
-            DispatchQueue.main.sync {
-                self.appendText("Done")
+                self.appendText("Uploading diff...")
+                
+                workflowManager.parcelHelper.uploadDocument(data: NSData(data: diffStateData), fileName: "diff.dat") { document, error in
+                    guard let documentId = document?.id else {
+                        print("Error uploading document")
+                        self.appendText("Error uploading document")
+                        return
+                    }
+                    self.appendText("Uploaded document \(documentId)")
+                    self.appendText("Reporting diff...")
+                    job.reportParcelDiff(diffDocumentId: documentId)
+                    self.appendText("Done")
+                }
             }
 
         })
 
-        self.syftJob?.onRejected(execute: { timeout in
+        job.onRejected(execute: { timeout in
             DispatchQueue.main.sync {
                 self.appendText("Rejected")
             }
         })
 
-        self.syftJob?.onError(execute: { error in
+        job.onError(execute: { error in
             print(error)
             DispatchQueue.main.sync {
                 self.appendText(error.localizedDescription)
             }
         })
 
-        self.syftJob?.start(chargeDetection: false, wifiDetection: false)
+        job.start(chargeDetection: false, wifiDetection: false)
 
     }
 

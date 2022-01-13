@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var buttonChangePygridToken: AppCompatButton
 
     private lateinit var buttonStartTraining: AppCompatButton
-    private lateinit var buttonUploadDummyDocument: AppCompatButton
 
     private lateinit var workflowManager: WorkflowManager<TokenRequest, ByteArray>
 
@@ -117,9 +116,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         buttonStartTraining = findViewById(R.id.button_start_training)
 
-        buttonUploadDummyDocument = findViewById(R.id.button_upload_dummy_document)
-        buttonUploadDummyDocument.setOnClickListener { uploadDummyDocument() }
-
         workflowManager = WorkflowManager(
             preferences = this,
             databaseDriverFactory = databaseDriverFactory,
@@ -161,7 +157,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
 
         workflowManager.spotifyHistoryFetcher.also {
-            textViewCurrentParticipantId.text = "Participant ID: ${it.participantId}"
             textViewHistoryResult.text = "${it.getStatus().trackCount} tracks"
             progressFetchHistory.alpha = when (it.getStatus().trackCount) {
                 null -> 1f
@@ -186,6 +181,7 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         }
 
         workflowManager.pygridHelper.also {
+            textViewCurrentParticipantId.text = "Participant ID: ${it.participantId}"
             textViewCurrentPygridHost.text = when (val value = it.host) {
                 null -> "Host not set"
                 else -> "Host: $value"
@@ -212,10 +208,10 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
     }
 
     private fun attemptChangeSpotifyParticipantId() {
-        promptForInput("Spotify Participant ID", workflowManager.spotifyHistoryFetcher.participantId.toString()) {
+        promptForInput("Spotify Participant ID", workflowManager.pygridHelper.participantId.toString()) {
             when (it) {
-                workflowManager.spotifyHistoryFetcher.participantId.toString(), "" -> return@promptForInput
-                else -> workflowManager.spotifyHistoryFetcher.participantId = it.toInt()
+                workflowManager.pygridHelper.participantId.toString(), "" -> return@promptForInput
+                else -> workflowManager.pygridHelper.participantId = it.toInt()
             }
         }
     }
@@ -298,13 +294,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
 
         CoroutineScope(Dispatchers.Main).launch {
             kotlin.runCatching { workflowManager.fetchHistory() }
-        }
-    }
-
-    private fun uploadDummyDocument() {
-        CoroutineScope(Dispatchers.IO).launch {
-            workflowManager.parcelHelper.uploadDocument("Test content".toByteArray(), "test.txt")
-                .let { println(it) }
         }
     }
 

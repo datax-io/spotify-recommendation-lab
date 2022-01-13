@@ -1,7 +1,8 @@
 CREATE TABLE tracks
 (
     id                         TEXT    NOT NULL PRIMARY KEY,
-    album                      TEXT,
+    track_id                   TEXT    NOT NULL,
+    user_id                    TEXT    NOT NULL,
     in_recent_tracks           INTEGER AS Boolean NOT NULL DEFAULT 0,
     in_saved_tracks            INTEGER AS Boolean NOT NULL DEFAULT 0,
     in_top_tracks_short_term   INTEGER AS Boolean NOT NULL DEFAULT 0,
@@ -28,28 +29,37 @@ CREATE TABLE trackFeatures
     mode             INTEGER AS Int NOT NULL,
     speechiness      REAL AS Float  NOT NULL,
     tempo            REAL AS Float  NOT NULL,
-    time_signature   INTEGER AS Int NOT NULL,
     valence          REAL AS Float  NOT NULL
 );
 
 insertTrack:
 INSERT OR
 REPLACE
-INTO tracks (id, album, in_recent_tracks, in_saved_tracks, in_top_tracks_short_term, in_top_tracks_medium_term,
+INTO tracks (id, track_id, user_id, in_recent_tracks, in_saved_tracks, in_top_tracks_short_term, in_top_tracks_medium_term,
              in_top_tracks_long_term, in_album, in_own_playlists, in_foreign_playlists, album_in_own_playlists,
              album_in_foreign_playlists)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 insertTrackFeature:
 INSERT OR
 REPLACE
 INTO trackFeatures (id, acousticness, danceability, duration_ms, energy, instrumentalness, key, liveness, loudness,
-                    mode, speechiness, tempo, time_signature, valence)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+                    mode, speechiness, tempo, valence)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 selectAllTracks:
 SELECT *
 FROM tracks;
+
+selectAllTracksByUserId:
+SELECT *
+FROM tracks
+WHERE user_id = ?;
+
+countTracksByUserId:
+SELECT count(*)
+FROM tracks
+WHERE user_id = ?;
 
 selectAllTrackFeatures:
 SELECT *
@@ -66,9 +76,21 @@ countTrackFeatures:
 SELECT count(*)
 FROM trackFeatures;
 
+countTrackFeaturesByUserId:
+SELECT count(trackFeatures.id)
+FROM trackFeatures
+INNER JOIN tracks
+ON trackFeatures.id = tracks.track_id
+AND tracks.user_id = ?;
+
 deleteAllTracks:
 DELETE
 FROM tracks;
+
+deleteAllTracksByUserId:
+DELETE
+FROM tracks
+WHERE user_id = ?;
 
 deleteAllTrackFeatures:
 DELETE

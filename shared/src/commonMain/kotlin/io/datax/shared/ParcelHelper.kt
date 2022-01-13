@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
 const val redirectUri = "https://storage.googleapis.com/datax-research-public/parcel-redirect/index.html"
 
@@ -94,6 +95,7 @@ class ParcelHelper<R, D>(
                 "tags" to listOf("to-app-${appId ?: throw Exception("No")}"),
             )
         )
+
         return DocumentUploadData(
             url = "https://storage.oasislabs.com/v1/parcel",
             token = token!!,
@@ -101,11 +103,27 @@ class ParcelHelper<R, D>(
             kotlin.runCatching {
                 formDataUploadDelegate.uploadFormData(it.url, it.token, data, metadata.toString())
                     .let { jsonCodec.decodeFromString<ParcelDocument>(it) }
+                    .also { grantDocumentToApp(it.id) }
             }
         }.onFailure { it.printStackTrace() }.getOrThrow()
     }
 
     fun getTokenRequest(clientId: String, authCode: String) =
         this.openIDHelperDelegate.getTokenRequest(clientId, authCode)
+
+    private suspend fun grantDocumentToApp(documentId: String) {
+        val grantPayload = jsonObjectOf(
+            "grantee" to appId!!,
+            "condition" to mapOf(
+                "document.id" to mapOf("\$eq" to documentId),
+            ),
+            "capabilities" to "read",
+        )
+        httpClient.post<JsonObject>("$baseUrl/grants") {
+            headers(getHeader)
+            contentType(ContentType.Application.Json)
+            body = grantPayload
+        }
+    }
 
 }
