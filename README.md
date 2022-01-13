@@ -31,7 +31,7 @@ You will need the following:
    1. Log into Spotify developer dashboard: https://developer.spotify.com/dashboard/applications
    2. Create an app. Any title would be fine.
    3. On the app detail page, record the Client ID displayed under the name of the app.
-   4. Click "Edit Settings" to open the settings dialog. Under "Redirect URIs", add `http://localhost:8888/callback`
+   4. Click "Edit Settings" to open the settings dialog. Under "Redirect URIs", add `spotifyrecommendationlab://spotifyauth`
    5. Click "Users and Access" and add your own spotify account as a new user.
    6. Inside the app, next to "Spotify" > "Client ID", tap "Change" and paste the Client ID obtained from the developer dashboard.
    7. Tap "Authorize" to test the Spotify authorization.

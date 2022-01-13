@@ -5,9 +5,9 @@ class PygridHelper(
     host: String?,
     authToken: String?,
     val modelName: String = "spotify_recommendation",
-    val modelVersion: String = "1.0",
+    val modelVersion: String = "1.1",
+    val numOfParticipants: Int = 10,
     participantId: Int,
-    val numOfParticipants: Int = 9,
 ) : Changeable() {
 
     companion object {

@@ -23,16 +23,12 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     @IBOutlet weak var historyResultLabel: UILabel!
     @IBOutlet weak var fetchHistoryActivityIndicator: UIActivityIndicatorView!
     
-    @IBOutlet weak var currentParcelAppLabel: UILabel!
     @IBOutlet weak var changeParcelAppIdButton: UIButton!
-    @IBOutlet weak var currentParcelClientLabel: UILabel!
     @IBOutlet weak var changeParcelClientIdButton: UIButton!
     @IBOutlet weak var currentParcelUserLabel: UILabel!
     @IBOutlet weak var getParcelAuthorizationButton: UIButton!
 
-    @IBOutlet weak var currentPygridHostLabel: UILabel!
     @IBOutlet weak var changePygridHostButton: UIButton!
-    @IBOutlet weak var currentPygridTokenLabel: UILabel!
     @IBOutlet weak var changePygridTokenButton: UIButton!
     @IBOutlet weak var fetchExternalDataButton: UIButton!
     @IBOutlet weak var fetchExternalDataActivityIndicator: UIActivityIndicatorView!
@@ -114,8 +110,9 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
     
     func onParcelParamsChanged(clientId: String?, appId: String?) {
-        self.currentParcelClientLabel.text = clientId.map {"Client ID: \($0)"} ?? "Client ID not set"
-        self.currentParcelAppLabel.text = appId.map {"App ID: \($0)"} ?? "App ID not set"
+        self.changeParcelAppIdButton.setTitle(appId != nil ? "App ID: OK" : "Set App ID", for: .normal)
+        self.changeParcelClientIdButton.setTitle(clientId != nil ? "Client ID: OK" : "Set Client ID", for: .normal)
+
         guard let _ = clientId,
               let _ = appId else {
             self.getParcelAuthorizationButton.isEnabled = false
@@ -142,7 +139,7 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
 
     @IBAction func fetchExternalData() {
-        promptForInput(title: "External Data Prefix", message: "Enter new External Data Prefix",
+        promptForInput(title: "Load External Data", message: "Enter external data prefix",
                        value: workflowManager.spotifyHistoryFetcher.externalDataPrefix ?? "") {
             workflowManager.spotifyHistoryFetcher.externalDataPrefix = $0
             self.fetchExternalDataButton.isEnabled = false
@@ -163,12 +160,10 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
             return
         }
         self.historyResultLabel.text = "Result: \(trackCount) tracks"
-        let externalDataCountValues = status?.externalDataCount.values.map {$0.intValue}
-        if (externalDataCountValues == nil) {
-            self.fetchExternalDataLabel.text = "No external data loaded"
-        } else {
-            self.fetchExternalDataLabel.text = "External data loaded: \(externalDataCountValues!.count)"
-        }
+        
+        let externalDataCountValues = status?.externalDataCount.values.map { $0.intValue }.count ?? 0
+        self.fetchExternalDataLabel.text = "External data: \(externalDataCountValues) of \(workflowManager.pygridHelper.numOfParticipants) loaded"
+        
         onTrainingWithCsvReadinessChanged(participantId: workflowManager.pygridHelper.participantId)
     }
     
@@ -181,8 +176,8 @@ class AuthViewController: UIViewController, WorkflowManagerCallback {
     }
 
     func onPygridParamsChanged(host: String?, authToken: String?, externalDataPrefix: String?) {
-        self.currentPygridHostLabel.text = host.map {"Host: \($0)"} ?? "Host not set"
-        self.currentPygridTokenLabel.text = authToken != nil ? "Auth token set" : "Auth token not set"
+        self.changePygridHostButton.setTitle(host != nil ? "Host: OK" : "Set Host", for: .normal)
+        self.changePygridTokenButton.setTitle(authToken != nil ? "Token: OK" : "Set Token", for: .normal)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

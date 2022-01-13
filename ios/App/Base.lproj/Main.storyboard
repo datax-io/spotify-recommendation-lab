@@ -33,7 +33,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="equalSpacing" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="yac-CN-p2X">
-                                <rect key="frame" x="16" y="104" width="382" height="627"/>
+                                <rect key="frame" x="16" y="104" width="382" height="601"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Spotify" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uU8-hn-cgL">
                                         <rect key="frame" x="0.0" y="0.0" width="382" height="17"/>
@@ -119,78 +119,40 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="Oej-44-eSK">
-                                        <rect key="frame" x="0.0" y="157" width="382" height="36"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="3w9-hg-R09">
+                                        <rect key="frame" x="0.0" y="157" width="382" height="32"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="ZWd-vN-mek"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="Sk2-9t-DLI">
+                                        <rect key="frame" x="0.0" y="197" width="382" height="24"/>
                                         <subviews>
-                                            <activityIndicatorView hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="6if-JU-PMI">
-                                                <rect key="frame" x="0.0" y="0.0" width="20" height="36"/>
-                                            </activityIndicatorView>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No external data loaded" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HDE-lR-UQS">
-                                                <rect key="frame" x="29" y="0.0" width="244" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="guA-QS-PGJ">
-                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" constant="100" id="QLz-AR-DAI"/>
-                                                    <constraint firstAttribute="height" constant="36" id="qD1-vK-G59"/>
-                                                </constraints>
-                                                <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Load"/>
-                                                <connections>
-                                                    <action selector="fetchExternalData" destination="Zcc-do-qYw" eventType="touchUpInside" id="txw-tF-FTb"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Parcel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HE3-zj-AsJ">
-                                        <rect key="frame" x="0.0" y="201" width="382" height="17"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="Sk2-9t-DLI">
-                                        <rect key="frame" x="0.0" y="226" width="382" height="36"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No app ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LpW-bI-2WA">
-                                                <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Parcel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HE3-zj-AsJ">
+                                                <rect key="frame" x="0.0" y="3.5" width="42.5" height="17"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sS0-k9-noy">
-                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
+                                                <rect key="frame" x="111.5" y="0.0" width="95" height="24"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="36" id="5gJ-Dt-7pt"/>
-                                                    <constraint firstAttribute="width" constant="100" id="eaX-9X-ANe"/>
+                                                    <constraint firstAttribute="height" constant="24" id="5gJ-Dt-7pt"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="App ID: OK"/>
                                                 <connections>
                                                     <action selector="attemptChangeParcelAppId" destination="Zcc-do-qYw" eventType="touchUpInside" id="3TS-dd-red"/>
                                                 </connections>
                                             </button>
-                                        </subviews>
-                                    </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="OKo-Sj-ZQf">
-                                        <rect key="frame" x="0.0" y="270" width="382" height="36"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No client ID" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YHM-bN-0by">
-                                                <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="reV-NM-zuT">
-                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
+                                                <rect key="frame" x="275.5" y="0.0" width="106.5" height="24"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="36" id="fs0-Dh-7r0"/>
-                                                    <constraint firstAttribute="width" constant="100" id="vSm-JW-D0a"/>
+                                                    <constraint firstAttribute="height" constant="24" id="fs0-Dh-7r0"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Client ID: OK"/>
                                                 <connections>
                                                     <action selector="attemptChangeParcelClientId" destination="Zcc-do-qYw" eventType="touchUpInside" id="efZ-6w-X2m"/>
                                                 </connections>
@@ -198,7 +160,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="Nx5-TD-6U4">
-                                        <rect key="frame" x="0.0" y="314" width="382" height="36"/>
+                                        <rect key="frame" x="0.0" y="229" width="382" height="36"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Unauthorized" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Zx-Nu-Dd5">
                                                 <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
@@ -220,52 +182,40 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PyGrid" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IpX-Xq-5U0">
-                                        <rect key="frame" x="0.0" y="358" width="382" height="17"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="st9-Wk-XXH">
-                                        <rect key="frame" x="0.0" y="383" width="382" height="36"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cp1-sY-Fq2">
+                                        <rect key="frame" x="0.0" y="273" width="382" height="32"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="MsF-mG-gZl"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="st9-Wk-XXH">
+                                        <rect key="frame" x="0.0" y="313" width="382" height="24"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No host set" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ofu-ki-UdK">
-                                                <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PyGrid" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="IpX-Xq-5U0">
+                                                <rect key="frame" x="0.0" y="3.5" width="46" height="17"/>
+                                                <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OvG-dq-vBf">
-                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
+                                                <rect key="frame" x="128" y="0.0" width="82" height="24"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="100" id="Jlu-e7-VBp"/>
-                                                    <constraint firstAttribute="height" constant="36" id="vQo-dU-eVL"/>
+                                                    <constraint firstAttribute="height" constant="24" id="vQo-dU-eVL"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Host: OK"/>
                                                 <connections>
                                                     <action selector="attemptChangePygridHost:" destination="Zcc-do-qYw" eventType="touchUpInside" id="Ftr-3D-rtS"/>
                                                 </connections>
                                             </button>
-                                        </subviews>
-                                    </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="mEO-jK-qCT">
-                                        <rect key="frame" x="0.0" y="427" width="382" height="36"/>
-                                        <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No token set" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="F60-7Z-gYa">
-                                                <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gB1-I1-Z4l">
-                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
+                                                <rect key="frame" x="292" y="0.0" width="90" height="24"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="36" id="E6o-Mg-jxL"/>
-                                                    <constraint firstAttribute="width" constant="100" id="WjJ-mq-9NG"/>
+                                                    <constraint firstAttribute="height" constant="24" id="E6o-Mg-jxL"/>
                                                 </constraints>
                                                 <state key="normal" title="Button"/>
-                                                <buttonConfiguration key="configuration" style="plain" title="Change"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Token: OK"/>
                                                 <connections>
                                                     <action selector="attemptChangePygridToken:" destination="Zcc-do-qYw" eventType="touchUpInside" id="Edr-gM-j0G"/>
                                                 </connections>
@@ -273,7 +223,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacing="9" translatesAutoresizingMaskIntoConstraints="NO" id="L1S-Zp-hcZ">
-                                        <rect key="frame" x="0.0" y="471" width="382" height="36"/>
+                                        <rect key="frame" x="0.0" y="345" width="382" height="36"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Participant ID: 0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aAR-qL-Us5">
                                                 <rect key="frame" x="0.0" y="0.0" width="273" height="36"/>
@@ -295,15 +245,15 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cp1-sY-Fq2">
-                                        <rect key="frame" x="0.0" y="515" width="382" height="16"/>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZjC-LL-LDD">
+                                        <rect key="frame" x="0.0" y="389" width="382" height="32"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <constraints>
-                                            <constraint firstAttribute="height" constant="16" id="MsF-mG-gZl"/>
+                                            <constraint firstAttribute="height" constant="32" id="Q2r-3o-c3p"/>
                                         </constraints>
                                     </view>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yBq-7r-bGp">
-                                        <rect key="frame" x="0.0" y="539" width="382" height="40"/>
+                                        <rect key="frame" x="0.0" y="429" width="382" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="qVl-GB-8sZ"/>
                                         </constraints>
@@ -313,8 +263,41 @@
                                             <action selector="attemptStartTrainingWithApiData:" destination="Zcc-do-qYw" eventType="touchUpInside" id="D8a-Yo-BnC"/>
                                         </connections>
                                     </button>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jR6-Zx-nw0">
+                                        <rect key="frame" x="0.0" y="477" width="382" height="32"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="OeO-8i-xeg"/>
+                                        </constraints>
+                                    </view>
+                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="Oej-44-eSK">
+                                        <rect key="frame" x="0.0" y="517" width="382" height="36"/>
+                                        <subviews>
+                                            <activityIndicatorView hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="6if-JU-PMI">
+                                                <rect key="frame" x="0.0" y="0.0" width="20" height="36"/>
+                                            </activityIndicatorView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No external data loaded" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HDE-lR-UQS">
+                                                <rect key="frame" x="28" y="0.0" width="246" height="36"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="guA-QS-PGJ">
+                                                <rect key="frame" x="282" y="0.0" width="100" height="36"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="100" id="ebb-BF-CO7"/>
+                                                    <constraint firstAttribute="height" constant="36" id="qD1-vK-G59"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="Load"/>
+                                                <connections>
+                                                    <action selector="fetchExternalData" destination="Zcc-do-qYw" eventType="touchUpInside" id="txw-tF-FTb"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6uc-hy-SUi">
-                                        <rect key="frame" x="0.0" y="587" width="382" height="40"/>
+                                        <rect key="frame" x="0.0" y="561" width="382" height="40"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="cqA-8E-Ygl"/>
                                         </constraints>
@@ -343,12 +326,8 @@
                         <outlet property="changePygridHostButton" destination="OvG-dq-vBf" id="0i2-KC-tnQ"/>
                         <outlet property="changePygridTokenButton" destination="gB1-I1-Z4l" id="0JT-kw-yT1"/>
                         <outlet property="changeSpotifyClientIdButton" destination="HNP-ed-7uC" id="Ly5-xp-e4E"/>
-                        <outlet property="currentParcelAppLabel" destination="LpW-bI-2WA" id="o3M-B9-d0Y"/>
-                        <outlet property="currentParcelClientLabel" destination="YHM-bN-0by" id="otY-iK-gbE"/>
                         <outlet property="currentParcelUserLabel" destination="7Zx-Nu-Dd5" id="m8e-VH-pzF"/>
                         <outlet property="currentParticipantLabel" destination="aAR-qL-Us5" id="TQh-AQ-Cli"/>
-                        <outlet property="currentPygridHostLabel" destination="ofu-ki-UdK" id="7eP-1V-1NW"/>
-                        <outlet property="currentPygridTokenLabel" destination="F60-7Z-gYa" id="GdD-8h-pIK"/>
                         <outlet property="currentSpotifyClientLabel" destination="awE-RZ-Rs2" id="RSk-75-850"/>
                         <outlet property="currentSpotifyUserLabel" destination="EAr-rN-gkN" id="JAD-iy-hrF"/>
                         <outlet property="fetchExternalDataActivityIndicator" destination="6if-JU-PMI" id="mNp-tl-GWQ"/>

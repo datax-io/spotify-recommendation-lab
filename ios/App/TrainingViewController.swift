@@ -150,6 +150,7 @@ class TrainingViewController: UIViewController {
                         self.appendText("Error uploading document")
                         return
                     }
+                    print("Diff document ID: \(documentId)")
                     self.appendText("Uploaded document \(documentId)")
                     self.appendText("Reporting diff...")
                     job.reportParcelDiff(diffDocumentId: documentId)
